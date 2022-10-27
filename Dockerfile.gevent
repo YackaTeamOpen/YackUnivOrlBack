@@ -1,0 +1,32 @@
+FROM ubuntu:18.04
+
+ARG FLASK_ENV
+ARG FLASK_APP
+
+ENV PYTHONIOENCODING=utf-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_ENV=${FLASK_ENV}
+ENV FLASK_APP=${FLASK_APP}
+
+
+WORKDIR /yackapi
+
+RUN apt-get update --fix-missing \
+	&& apt-get install apt-utils -y 
+RUN apt-get install python3.7 python3-pip python3-wheel cython -y
+RUN apt-get install python3.7-dev default-libmysqlclient-dev build-essential -y
+
+COPY ./app ./app
+COPY ./install ./install
+
+RUN python3.7 -m pip install --upgrade pip
+RUN pip install mysqlclient
+RUN pip install setuptools wheel cython numpy --no-cache-dir
+RUN pip install --prefer-binary --no-cache-dir -r install/reqs.txt
+RUN pip install gevent
+
+EXPOSE 5000
+
+ENTRYPOINT ["/bin/bash", "app/entrypoint.sh"]

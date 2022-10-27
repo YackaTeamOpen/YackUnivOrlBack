@@ -1,0 +1,54 @@
+version: "3.8"
+services:
+  yackapi-alpha:
+    container_name: cnt-a-yackapi
+    networks:
+      - yacka-backend
+    user: "${YUID}:${YGID}"
+    image: yackapi:v1
+    build:
+      context: .
+      dockerfile: Dockerfile.gevent
+      args:
+        YACKAPIENV: alpha
+    environment:
+      FLASK_APP: app/yacka.py
+    ports:
+      - "127.0.0.1:5001:5000"
+    volumes:
+      - ./yackapi-alpha/logs:/yackapi/logs
+      - ./yackapi-alpha/uploads:/main/public/uploads
+    restart: always
+    depends_on:
+      - "mysql-yackapi-alpha"
+
+  mysql-yackapi-alpha:
+    container_name: cnt-a-yackapi-sql
+    networks:
+      - yacka-backend
+    user: "${YUID}:${YGID}"
+    restart: always
+    image: mysql:latest
+    #image: mysql:5.7
+    ports:
+      - "127.0.0.1:3307:3306"
+    environment:
+      MYSQL_DATABASE: yackunivdb
+      MYSQL_ROOT_PASSWORD: YackUnivDbPass
+      MYSQL_USER: admin_yacka
+      MYSQL_PASSWORD: YackUnivDbPass
+      THREADS: without
+    volumes:
+      #- ./yackapi-alpha/db:/var/lib/mysql
+      - yackapi-db-volume:/var/lib/mysql
+      - ./install/sql_files:/home
+    cap_add:
+      - SYS_NICE # CAP_SYS_NICE
+
+volumes:
+  yackapi-db-volume:
+
+networks:
+  yacka-backend:
+    external: true
+    name: yacka-backend-network
