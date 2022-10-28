@@ -12,7 +12,7 @@ Outre les différents fichiers de configuration, le repo contient les 3 parties 
 Pour utiliser le repo il vous faudra le clôner sur votre machine locale avec git, puis créer une ou plusieurs branches locales dans lesquelles vous développerez vos fonctionnalités (process classique git) :
   
   ```shell
-  $ git clone git@github.com:yackateam/YackUnivOrlBack.git
+  $ git clone git@github.com:YackaTeamOpen/YackUnivOrlBack.git
   $ git checkout -b nom-de-la-nouvelle-branche
   $ cd YackUnivOrlBack
   ```
