@@ -66,7 +66,7 @@ Enfin, voici deux schémas qui vous aideront à :
 ![alt text](./shared_trip_workflow31-1-22-small.png)
 
 - comprendre la structure renvoyée par les endpoints shared_trip/createshtfd/<int:trip_id> et /shared_trip/createshtfp/<int:wtrip_id> :
-![alt text]("./résultat du endpoint shared_trip.pdf")
+![alt text](./resultat_du_endpoint_shared_trip.pdf)
 
 Bon code !
   
