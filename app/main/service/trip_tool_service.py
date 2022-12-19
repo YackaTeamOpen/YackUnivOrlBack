@@ -76,3 +76,5 @@ def trip_list_recurrence_mean(trip_list) :
     for trip in trip_list :
         recurrence_sum += trip.pickled_when.nb_occurrences()
     return 0 if len(trip_list) == 0 else int(recurrence_sum / len(trip_list))
+
+

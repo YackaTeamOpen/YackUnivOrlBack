@@ -22,7 +22,7 @@ class User(db.Model):
     name = db.Column(db.String(50), nullable=False)
     surname = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(191), nullable=False, unique=True)
-    phone = db.Column(db.String(191), nullable=True)
+    phone = db.Column(db.String(191), nullable=True) #Passer le nullable @ False
     aboutme = db.Column(db.String(191), nullable=True)
     photo = db.Column(LONGTEXT, nullable=True)
     public_phone = db.Column(db.Boolean, default=False)
