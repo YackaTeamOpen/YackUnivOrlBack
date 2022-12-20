@@ -10,6 +10,7 @@ from main.model.user import User
 from main.model.waiting_trip import Waiting_trip
 from main.model.wtrip_list import Wtrip_list
 from main.model.shared_trip import Shared_trip
+import qrcode
 
 from main.service.shared_trip_service import (
     get_shared_trips_per_user,
@@ -233,5 +234,37 @@ def test(test_type, arg=None, arg2=None, arg3=None, arg4=None, arg5=None):
             return None
         terminate_a_shared_trip(arg)
         return True
+    if test_type in ["trips"]:
+        trip = get_a_shared_trip(1)
+        print(trip)
+        return True
+
+    def list_terminated_sht_proof_of_travel():
+        shared_trips_wtrip_lists_terminated = (
+            db.session.query(Shared_trip, Wtrip_list)
+                .join(Wtrip_list, Shared_trip.id == Wtrip_list.shared_trip_id)
+                .filter(Shared_trip.shared_trip_status=="terminated")
+                .all()
+        )
+        proofs_of_travel=[]
+        for s,w in shared_trips_wtrip_lists_terminated:
+            sht_whole = Sht_wtl_whole(s,w)
+            if sht_whole.is_ok:
+                proof = get_proof_of_travel_sht(sht_whole.sht.id)
+                proofs_of_travel.append("Proof of travel of the shared trip {}: {}".format(
+                    sht_whole.sht.id,proof)
+                )
+        if (len(proofs_of_travel)>0):
+            print(proofs_of_travel)
+        else:
+            print("Number of terminated shared trip : {}".format(
+                len(shared_trips_wtrip_lists_terminated)
+            ))
+
+    if test_type in ["list_proof_of_travel"]:
+        list_terminated_sht_proof_of_travel()
+        return True
+
+
 
     return None
