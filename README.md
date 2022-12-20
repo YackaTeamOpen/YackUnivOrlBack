@@ -60,8 +60,13 @@ Lorsque vous ajouterez des modèles dans l'API ou que vous ferez des modifs à d
   ```
 Ces modifs doivent bien sûr être coordonnées entre vos différentes branches. Si certains font des modifs de structure de la base, travaillent sur des fonctionnalités, pendant que d'autres en développent d'autres reposant sur une structure différente, même s'il n'y a pas de merge conflict entre le code, il y en aura un au lancement de l'app... 
   
-Enfin, voici le workflow d'un shared_trip :
+Enfin, voici deux schémas qui vous aideront à :
+
+- comprendre le workflow d'un shared_trip :
 ![alt text](./shared_trip_workflow31-1-22-small.png)
+
+- comprendre la structure renvoyée par les endpoints shared_trip/createshtfd/<int:trip_id> et /shared_trip/createshtfp/<int:wtrip_id> :
+![alt text](./resultat_du_endpoint_shared_trip.pdf)
 
 Bon code !
   

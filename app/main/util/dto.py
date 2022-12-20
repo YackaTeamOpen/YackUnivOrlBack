@@ -1127,4 +1127,5 @@ class CompanyDto:
         },
     )
 
-
+class ProofOfTravelDto:
+    api = Namespace("/proof", description="Proof of travel endpoints")

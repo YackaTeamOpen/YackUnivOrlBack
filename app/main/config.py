@@ -19,7 +19,7 @@ environments = {
         "remember_cookie_duration_minutes": 120,
         "session_cookie_secure": None,
         "session_cookie_httponly": False,
-        "lat_to_meters": 111000,  # équivalence degrés de latitude - mètres en CVL
+        "lat_to_meters": 111000,  # équivalence degrés de latitude - mètres en CVL *
         "long_to_meters": 74870,  # équivalence degrés de longitude - mètres en CVL
         "avatar_size" : 60,
     }
