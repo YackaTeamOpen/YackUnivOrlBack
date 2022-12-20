@@ -88,6 +88,37 @@ def get_proof_of_travel_by_wtl_id(wtl_id):
     return Proof_of_travel.query.join(Wtrip_list, Proof_of_travel.wtrip_list_id==wtl_id)\
         .filter(Proof_of_travel.wtrip_list_id==wtl_id).all()
 
+def getAllProof():
+    return Proof_of_travel.query.all()
+
+def createProof(driver_id, passenger_id, trip_id):
+    pass
+
+def validateProof(proof_id):
+    pass
+
+def getProofById(proof_id):
+    proof = Proof_of_travel.query.filter_by(id=proof_id).first()
+    return proof
+
+def getProofByUser(user_id):
+    proof = Proof_of_travel.query.filter((driver_id==user_id) | (passenger_id==user_id)).first()
+    return proof
+
+def getNbProofByUserAsDriver(user_id):
+    proofs = Proof_of_travel.query.filter_by(driver_id=user_id)
+    return len(proofs)
+
+def getNbProofByUserAsPassenger(user_id):
+    proofs = Proof_of_travel.query.filter_by(passenger_id=user_id)
+    return len(proofs)
+
+def getNbKmByUserAsDriver(user_id):
+    proofs = Proof_of_travel.query.filter_by(driver_id=user_id)
+
+
+def getNbKmByUserAsPassenger(user_id):
+    proofs = Proof_of_travel.query.filter_by(passenger_id=user_id)
 
 
 def save_changes(data):

@@ -25,6 +25,8 @@ from main.service.history_service import (
     get_history_by_shared_trip_id,
 )
 
+from main.service.proof_of_travel_service import getAllProof,getProofByUser
+
 
 def test(test_type, arg=None, arg2=None, arg3=None, arg4=None, arg5=None):
     """ Runs a sequence of tests mentionned by test_type.
@@ -250,7 +252,7 @@ def test(test_type, arg=None, arg2=None, arg3=None, arg4=None, arg5=None):
         for s,w in shared_trips_wtrip_lists_terminated:
             sht_whole = Sht_wtl_whole(s,w)
             if sht_whole.is_ok:
-                proof = get_proof_of_travel_sht(sht_whole.sht.id)
+                proof = get_proof_of_travel_by_wtl_id(sht_whole.wtl.id)
                 proofs_of_travel.append("Proof of travel of the shared trip {}: {}".format(
                     sht_whole.sht.id,proof)
                 )
@@ -261,9 +263,15 @@ def test(test_type, arg=None, arg2=None, arg3=None, arg4=None, arg5=None):
                 len(shared_trips_wtrip_lists_terminated)
             ))
 
-    if test_type in ["list_proof_of_travel"]:
+    if test_type in ["proof_of_travel"]:
         list_terminated_sht_proof_of_travel()
         return True
+
+    if test-type in ["list_proof_of_travel"]:
+        print(getAllProof())
+        return True
+
+
 
 
 
