@@ -27,11 +27,10 @@ jobs:
          sudo mysql -e "GRANT ALL PRIVILEGES ON yackunivdb.* TO 'admin_yackuniv'@'localhost';FLUSH PRIVILEGES;"
 
          echo "Initialisation de la base de données"
-         rm -r migrations
 
          
          export FLASK_APP=app/yacka.py
-         export FLASK_ENV="local"
+         export FLASK_ENV=local
          flask db init
          flask db migrate
          flask db upgrade
