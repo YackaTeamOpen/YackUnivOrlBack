@@ -14,10 +14,14 @@ jobs:
             python-version: '3.7.11'
       - name: Install requirements
         run: pip install -r install/reqs.txt
-      - run: sudo service mysql start
-      - run: echo $MYSQL_PWD
-      - run: sudo mysql -u root -p
-
+      - name: Shutdown Ubuntu MySQL (SUDO)
+        run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
+      - name: Set up MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          with:
+            mysql version: '8.0' # Optional, default value is "latest". The version of the MySQ
+            mysql user: 'root' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
       - name: Install data of database
         run: sh ./install/db-init-and-populate.sh
       - name: Install pytest
