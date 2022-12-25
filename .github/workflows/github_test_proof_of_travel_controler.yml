@@ -15,6 +15,7 @@ jobs:
       - name: Install requirements
         run: pip install -r install/reqs.txt
       - name: Install data of database
+        run: sudo service mysql start
         run: sh ./install/db-init-and-populate.sh
       - name: Install pytest
         run: pip install pytest
