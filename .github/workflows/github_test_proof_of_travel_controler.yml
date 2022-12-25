@@ -14,7 +14,10 @@ jobs:
             python-version: '3.7.11'
       - name: Install requirements
         run: pip install -r install/reqs.txt
-      - run: sudo service mysql start
+      -  run: |
+            sudo /etc/init.d/mysql start
+            mysql -u root --password= 
+
       - run: sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '';"
       - name: Install data of database
         run: sh ./install/db-init-and-populate.sh
