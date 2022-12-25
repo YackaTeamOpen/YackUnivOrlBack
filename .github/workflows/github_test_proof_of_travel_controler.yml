@@ -6,6 +6,12 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports: [ '3306:3306' ]
     steps:
       - uses: actions/checkout@v3
       - name: Set Up Python 3.7.11
@@ -14,15 +20,8 @@ jobs:
             python-version: '3.7.11'
       - name: Install requirements
         run: pip install -r install/reqs.txt
-      - name: Shutdown Ubuntu MySQL (SUDO)
-        run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
-      - name: Set up MySQL
-        uses: mirromutth/mysql-action@v1.1
-        with:
-            mysql version: '8.0' # Optional, default value is "latest". The version of the MySQ
-            mysql root password: 'root'
-      - name: Install data of database
-        run: sh ./install/db-init-and-populate.sh
+      - name: MySQL
+        run: sudo service mysql start
       - name: Install pytest
         run: pip install pytest
       - name: Run tests
