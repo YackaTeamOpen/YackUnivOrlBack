@@ -21,9 +21,12 @@ jobs:
         uses: actions/setup-python@v4
         with:
             python-version: '3.7.11'
-      - run: docker run mysql
       - name: Install requirements
         run: pip install -r install/reqs.txt
+      - run: sudo service mysql start
+      - run: |
+          sudo mysql -u root 
+          sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';"
       - name: Install data of database
         run: sh ./install/db-init-and-populate.sh
       - name: Install pytest
