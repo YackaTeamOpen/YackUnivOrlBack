@@ -14,8 +14,8 @@ jobs:
             python-version: '3.7.11'
       - name: Install requirements
         run: pip install -r install/reqs.txt
+      - run: sudo service mysql start
       - name: Install data of database
-        run: sudo service mysql start
         run: sh ./install/db-init-and-populate.sh
       - name: Install pytest
         run: pip install pytest
