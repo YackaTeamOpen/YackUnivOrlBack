@@ -22,7 +22,6 @@ jobs:
          sudo /etc/init.d/mysql start
          mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '';"
          echo "Création base de données + utilisateurs"
-         sudo mysql -e "DROP DATABASE yackunivdb;"
          sudo mysql -e "CREATE DATABASE yackunivdb;"
          sudo mysql -e "CREATE USER 'admin_yackuniv'@'localhost' IDENTIFIED BY 'YackUnivDbPass';FLUSH PRIVILEGES;"
          sudo mysql -e "GRANT ALL PRIVILEGES ON yackunivdb.* TO 'admin_yackuniv'@'localhost';FLUSH PRIVILEGES;"
