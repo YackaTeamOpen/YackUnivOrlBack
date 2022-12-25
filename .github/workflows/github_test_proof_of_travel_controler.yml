@@ -23,4 +23,4 @@ jobs:
       - name: Install pytest
         run: pip install pytest
       - name: Run tests
-        run: pytest app/test/test_proof_of_controller.py
+        run: pytest app/test/test_proof_of_travel_controller.py
