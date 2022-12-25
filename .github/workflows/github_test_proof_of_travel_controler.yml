@@ -8,7 +8,7 @@ jobs:
         python-version: [3.7]
     env:
       DB_USER: root
-      DB_PASSWORD:
+      DB_PASSWORD: root
     steps:
       - uses: actions/checkout@v3
       - name: Set Up Python 3.7.11
