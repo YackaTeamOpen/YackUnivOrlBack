@@ -10,7 +10,6 @@ from main.model.user import User
 from main.model.waiting_trip import Waiting_trip
 from main.model.wtrip_list import Wtrip_list
 from main.model.shared_trip import Shared_trip
-import qrcode
 
 from main.service.shared_trip_service import (
     get_shared_trips_per_user,
