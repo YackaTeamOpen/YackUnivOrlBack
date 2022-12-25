@@ -1,0 +1,170 @@
+import pytest
+from main.controller.proof_of_travel_controller import *
+from main.model.user import User
+from main.service.user_service import setup_password,getUserByEmail,getUserById
+from main.service.proof_of_travel_service import (
+    list_shared_trip_terminate_candidates,
+    get_one_shared_trip_terminate_candidates
+)
+from flask import request
+from main.service.history_service import get_history_by_shared_trip_id
+from main.service.proof_of_travel_service import getProofByUser
+from . import client
+
+@pytest.fixture(scope="module")
+def create_user1():
+    user = User(type=1,
+                gender="M",
+                name="Jean",
+                surname="Dupont",
+                email="dup15@yopmail.com",
+                phone="0711445522",
+                aboutme="Guy that can drive like an angel",
+                organization_id=1,
+                points=10,
+                email_ok=True
+    )
+    db.session.add(user)
+    db.session.commit()
+    user1=getUserByEmail("dup15@yopmail.com")
+    setup_password(user1.id,"dupont65")
+
+
+@pytest.fixture(scope="module")
+def create_user2():
+    user2 = User(type=2,
+                gender="F",
+                name="Jeanne",
+                surname="Dupont",
+                email="dup16@yopmail.com",
+                phone="0711445521",
+                aboutme="Gentle woman",
+                organization_id=1,
+                points=5,
+                email_ok=True
+    )
+    db.session.add(user2)
+    db.session.commit()
+    user2=getUserByEmail("dup16@yopmail.com")
+    setup_password(user2.id,"dupont45")
+@pytest.fixture()
+def get_sht_terminate_candidate():
+    sht_wtl = get_one_shared_trip_terminate_candidates()
+    sht = sht_wtl[0]
+    wtl=sht_wtl[1]
+    dicti={}
+    dicti["shared_trip"]=sht
+    dicti["wtrip_list"]=wtl
+    yield dicti
+
+@pytest.fixture()
+def get_user_sht(get_sht_terminate_candidate):
+    history=get_history_by_shared_trip_id(get_sht_terminate_candidate["shared_trip"].id)[0]
+    driver=getUserById(history.driver_id)
+    yield driver
+
+@pytest.fixture()
+def get_passenger_sht(get_sht_terminate_candidate):
+    history=get_history_by_shared_trip_id(get_sht_terminate_candidate["shared_trip"].id)[0]
+    passenger=getUserById(history.passenger_id)
+    yield passenger
+
+
+@pytest.fixture()
+def get_id_proof_driver(get_user_sht):
+    proof=getProofByUser(get_user_sht.id)
+    yield proof.id
+
+@pytest.fixture()
+def get_id_proof_passenger(get_passenger_sht):
+    proof=getProofByUser(get_passenger_sht.id)
+    yield proof.id
+
+def test_login_driver_successful(client,get_user_sht):
+    login = client.post("/login",data=dict(email=get_user_sht.email,
+                                           password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                        follow_redirects=True)
+    assert login.status_code == 200
+
+def test_login_passenger_successful(client,get_passenger_sht):
+    login = client.post("/login",data=dict(email=get_passenger_sht.email,
+                                           password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                        follow_redirects=True)
+    assert login.status_code == 200
+
+def test_proof_of_travel_created(client,get_user_sht,get_sht_terminate_candidate):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    proof = client.post("/proof/create",data={"sht_id":get_sht_terminate_candidate["shared_trip"].id})
+    assert proof.status_code == 201
+
+def test_proof_of_travel_already_created(client,get_user_sht,get_sht_terminate_candidate):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    proof = client.post("/proof/create", data={"sht_id": get_sht_terminate_candidate["shared_trip"].id})
+    assert proof.status_code == 409
+
+def test_proof_of_travel_unauthorized(client,get_user_sht,get_sht_terminate_candidate):
+    proof = client.post("/proof/create", data={"sht_id": get_sht_terminate_candidate["shared_trip"].id})
+    assert proof.status_code == 401
+
+
+def test_get_proof_of_travel_by_id(client,get_id_proof_driver):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    proof = client.post("/proof/"+str(get_id_proof_driver))
+    assert proof.status_code == 200
+
+
+def test_get_proof_of_travel_by_id_unauthorized(client,get_user_sht,get_id_proof_driver):
+    proof = client.post("/proof/"+str(get_id_proof_driver))
+    assert proof.status_code == 401
+
+def test_modify_proof_of_travel(client,get_user_sht,get_id_proof_driver):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    proof = client.post("/proof/"+str(get_id_proof_driver))
+    assert proof.status_code == 200
+
+def test_modify_proof_of_travel_unauthorized(client,get_id_proof_driver):
+    proof = client.post("/proof/"+str(get_id_proof_driver))
+    assert proof.status_code == 401
+
+
+def test_count_proofs_by_company(client,get_user_sht):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    nb = client.post("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id))
+    assert nb.status_code == 200
+
+def test_count_proofs_by_company_unauthorized(client,get_user_sht):
+    nb = client.post("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id))
+    assert nb.status_code == 401
+
+
+def test_count_proofs_by_driver(client,get_user_sht):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    nb = client.post("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id)+"/driver")
+    assert nb.status_code == 200
+
+def test_count_proofs_by_driver_unauthorized(client,get_user_sht):
+    nb = client.post("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id)+"/driver")
+    assert nb.status_code == 401
+
+def test_count_proofs_by_passenger(client,get_passenger_sht):
+    client.post("/login", data=dict(email=get_passenger_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    nb = client.post("/proof/"+str(get_passenger_sht.organization_id)+"/counts/"+str(get_passenger_sht.id)+"/passenger")
+    assert nb.status_code == 200
+
+def test_count_proofs_by_passenger_unauthorized(client,get_passenger_sht):
+    nb = client.post("/proof/"+str(get_passenger_sht.organization_id)+"/counts/"+str(get_passenger_sht.id)+"/passenger")
+    assert nb.status_code == 401

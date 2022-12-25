@@ -15,6 +15,7 @@ from main.controller.trip_controller import api as trip_ns
 from main.controller.message_controller import api as message_ns
 from main.controller.welcome_msg_controller import api as welcome_msg_ns
 from main.controller.shared_trip_controller import api as shared_trip_ns
+from main.controller.proof_of_travel_controller import api as proof_of_travel_ns
 # from main.controller.test_controller import api as test_ns
 # from main.controller.community_controller import api as community_ns
 # from main.controller.event_controller import api as event_ns
@@ -51,6 +52,7 @@ api.add_namespace(user_ns,path="/user")
 api.add_namespace(message_ns,path="/message")
 api.add_namespace(welcome_msg_ns,path="/welcome-msg")
 api.add_namespace(shared_trip_ns,path="/shared_trip")
+api.add_namespace(proof_of_travel_ns,path="/proof")
 # api.add_namespace(test_ns,path="/test")
 # api.add_namespace(event_ns,path="/event")
 # api.add_namespace(community_ns,path="/community")

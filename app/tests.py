@@ -25,7 +25,9 @@ from main.service.history_service import (
     get_history_by_shared_trip_id,
 )
 
-from main.service.proof_of_travel_service import getAllProof,getProofByUser
+from main.service.proof_of_travel_service import getAllProof,getProofByUser,create_proof_of_travel
+
+from main.service.incentive_service import create_incentive, create_incentives
 
 
 def test(test_type, arg=None, arg2=None, arg3=None, arg4=None, arg5=None):
@@ -267,11 +269,21 @@ def test(test_type, arg=None, arg2=None, arg3=None, arg4=None, arg5=None):
         list_terminated_sht_proof_of_travel()
         return True
 
-    if test-type in ["list_proof_of_travel"]:
+    if test_type in ["list_proof_of_travel"]:
         print(getAllProof())
         return True
 
+    if test_type in ["create_incentive"]:
+        create_incentive(arg,arg2)
+        return True
 
+    if test_type in ["create_incentives"]:
+        create_incentives(arg,arg2,arg3)
+        return True
+
+    if test_type in ["create_proof_of_travel"]:
+        create_proof_of_travel(arg)
+        return True
 
 
 

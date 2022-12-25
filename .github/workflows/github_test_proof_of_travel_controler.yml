@@ -1,0 +1,22 @@
+name: Test of proof_of_travel_controller
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set Up Python 3.7.11
+        uses: actions/setup-python@v4
+        with:
+            python-version: '3.7.11'
+            cache: 'pip'
+      - name: Install requirements
+        run: pip install -r install/reqs.txt
+      - name: Install data of database
+        run: sh ./install/db-init-and-populate.sh
+      - name: Install pytest
+        run: pip install pytest
+      - name: Run tests
+        run: pytest app/test/test_proof_of_controller.py
