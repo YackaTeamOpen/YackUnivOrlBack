@@ -2,7 +2,7 @@ name: Test of proof_of_travel_controller
 on: [push]
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: [3.7]
