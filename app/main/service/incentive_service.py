@@ -10,6 +10,7 @@ def create_incentive(amont,user_id):
     incentive=Incentive(amont=amont,user_id=user.id)
     db.session.add(incentive)
     db.session.commit()
+    return {"id": incentive.id, "status": "success", "message": "Incentive inserted"}
 
 def create_incentives(passenger_id,driver_id,wtrip_list_id):
     incentiveDriver = Incentive.query.filter(Incentive.user_id==driver_id).first()
@@ -17,6 +18,7 @@ def create_incentives(passenger_id,driver_id,wtrip_list_id):
     incentives=Incentives(incentive_passenger_id=incentivePassenger.id,incentive_driver_id=incentiveDriver.id,wtrip_list_id=wtrip_list_id)
     db.session.add(incentives)
     db.session.commit()
+    return {"id": incentives.id, "status": "success", "message": "Incentives inserted"}
 
 def get_incentive(incentive_id):
     return Incentive.query.filter(Incentive.id == incentive_id).first()
@@ -42,6 +44,10 @@ def get_incentives(driver_id, passenger_id, wtrip_list_id):
             .join(incentivePassenger, incentivePassenger.id== Incentives.incentive_passenger_id)\
         .filter((incentiveDriver.user_id == driver_id) & (incentivePassenger.user_id == passenger_id)
                 & (Incentives.wtrip_list_id==wtrip_list_id)).first()
+    return incentives
+
+def get_incentives_by_id(incentives_id):
+    incentives = Incentives.query.filter(Incentives.id == incentives_id).first()
     return incentives
 
 def get_incentives_by_wtrip(wtrip_list_id):

@@ -6,47 +6,11 @@ from main.service.proof_of_travel_service import (
     list_shared_trip_terminate_candidates,
     get_one_shared_trip_terminate_candidates
 )
-from flask import request
 from main.service.history_service import get_history_by_shared_trip_id
 from main.service.proof_of_travel_service import getProofByUser
 from . import client
 
-@pytest.fixture(scope="module")
-def create_user1():
-    user = User(type=1,
-                gender="M",
-                name="Jean",
-                surname="Dupont",
-                email="dup15@yopmail.com",
-                phone="0711445522",
-                aboutme="Guy that can drive like an angel",
-                organization_id=1,
-                points=10,
-                email_ok=True
-    )
-    db.session.add(user)
-    db.session.commit()
-    user1=getUserByEmail("dup15@yopmail.com")
-    setup_password(user1.id,"dupont65")
 
-
-@pytest.fixture(scope="module")
-def create_user2():
-    user2 = User(type=2,
-                gender="F",
-                name="Jeanne",
-                surname="Dupont",
-                email="dup16@yopmail.com",
-                phone="0711445521",
-                aboutme="Gentle woman",
-                organization_id=1,
-                points=5,
-                email_ok=True
-    )
-    db.session.add(user2)
-    db.session.commit()
-    user2=getUserByEmail("dup16@yopmail.com")
-    setup_password(user2.id,"dupont45")
 @pytest.fixture()
 def get_sht_terminate_candidate():
     sht_wtl = get_one_shared_trip_terminate_candidates()
