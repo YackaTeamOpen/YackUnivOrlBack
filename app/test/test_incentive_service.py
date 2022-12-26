@@ -1,5 +1,5 @@
 import pytest
-from main.controller.proof_of_travel_controller import *
+from sqlalchemy.orm import aliased
 from main.model.user import User
 from main.model.incentive import Incentive
 from main.model.incentives import Incentives
@@ -9,7 +9,6 @@ from main.service.proof_of_travel_service import (
     get_one_shared_trip_terminate_candidates
 )
 from main.service.history_service import get_history_by_shared_trip_id
-from main.service.proof_of_travel_service import getProofByUser
 from main.service.incentive_service import (
     create_incentive,
     create_incentives,
@@ -51,21 +50,18 @@ def get_passenger_sht(get_sht_terminate_candidate):
 def incentive_driver_created(get_user_sht):
     incentive = create_incentive(50,get_user_sht.id)
     yield incentive["id"]
-    Incentive.query.filter(Incentive.id == incentive["id"]).delete()
-    db.session.flush()
+
 
 @pytest.fixture()
 def incentive_passenger_created(get_passenger_sht):
     incentive = create_incentive(50,get_passenger_sht.id)
     yield incentive["id"]
-    Incentive.query.filter(Incentive.id == incentive["id"]).delete()
-    db.session.flush()
+
 @pytest.fixture()
 def incentives_created(get_user_sht,get_passenger_sht,get_sht_terminate_candidate):
     incentives = create_incentives(get_passenger_sht.id,get_user_sht.id, get_sht_terminate_candidate["wtrip_list"].id)
     yield incentives["id"]
-    Incentives.query.filter(Incentives.id == incentives["id"]).delete()
-    db.session.flush()
+
 
 @pytest.fixture()
 def incentive_driver(incentive_driver_created):
@@ -98,11 +94,11 @@ def test_get_incentive_by_id_not_exist():
     assert incentive == None
 
 
-def test_get_incentives_existing(incentives,get_user_sht,get_passenger_sht,get_sht_terminate_candidate):
-    incentives = get_incentives(get_user_sht.id,get_passenger_sht.id,get_sht_terminate_candidate["wtrip_list"].id)
-    assert incentives.id == incentives.id
+def test_get_incentives_existing(get_user_sht,get_passenger_sht,get_sht_terminate_candidate,incentives):
+    incentive = get_incentives(get_user_sht.id,get_passenger_sht.id,get_sht_terminate_candidate["wtrip_list"].id)
+    assert incentive.id == incentives.id
 
-def test_get_incentives_not_existing(incentives_created):
+def test_get_incentives_not_existing():
     id_driver=1000
     id_passenger=1000
     id_wtrip=1000
@@ -129,10 +125,10 @@ def test_get_incentive_by_user_existing(get_user_sht,incentive_driver):
     incentives = get_incentives_by_user(get_user_sht.id)
     assert incentive_driver in incentives
 
-def test_get_incentive_by_user_not_existing(get_user_sht,incentives_created):
+def test_get_incentive_by_user_not_existing(get_user_sht):
     id_user=1000
-    incentives = get_incentives_by_user(id_user)
-    assert incentives == []
+    incentive = get_incentives_by_user(id_user)
+    assert incentive == []
 
 def test_get_incentive_by_wtrip_existing(get_user_sht,get_sht_terminate_candidate):
     incentives = get_incentives_by_wtrip(get_sht_terminate_candidate["wtrip_list"].id)
