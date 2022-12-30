@@ -34,7 +34,7 @@ from main.service.incentive_service import (
     get_incentives_by_wtrip
 )
 from pytest_mock import mocker
-from . import *
+from main import db
 
 
 @pytest.fixture()
