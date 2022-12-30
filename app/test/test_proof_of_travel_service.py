@@ -29,6 +29,7 @@ from main.service.incentive_service import (
     create_incentive,
     create_incentives,
     get_incentive,
+    get_incentives,
     get_incentives_by_id,
     get_incentives_by_user,
     get_incentives_by_wtrip
@@ -89,8 +90,8 @@ def incentive_passenger(get_passenger_sht):
     yield incentive
 
 @pytest.fixture()
-def incentives_proof(get_sht_terminate_candidate):
-    incentives = get_incentives_by_wtrip(get_sht_terminate_candidate["wtrip_list"].id)
+def incentives_proof(get_passenger_sht, get_user_sht,get_sht_terminate_candidate):
+    incentives = get_incentives(get_user_sht.id,get_passenger_sht.id,get_sht_terminate_candidate["wtrip_list"].id)
     yield incentives
 
 @pytest.fixture()
@@ -104,7 +105,7 @@ def history_shared_trip(get_sht_terminate_candidate):
     yield history
 
 @pytest.fixture()
-def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate):
+def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,incentives_proof):
     dict={}
     for history in histories_shared_trip:
         for i in range(len(history.path_json)):
@@ -139,7 +140,7 @@ def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate):
                 passenger_seats=1,
                 passenger_contribution=0,
                 driver_revenue=0,
-                incentive_id=3,
+                incentive_id=incentives_proof.id,
                 wtrip_list_id=history.wtrip_list_id
         )
         db.session.add(proof)
