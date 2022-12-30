@@ -106,7 +106,7 @@ def history_shared_trip(get_sht_terminate_candidate):
     yield history
 
 @pytest.fixture()
-def create_proof_of_travel(mocker,histories_shared_trip,incentives):
+def create_proof_of_travel(histories_shared_trip,incentives):
     dict={}
     proofs=[]
     for history in histories_shared_trip:
@@ -114,7 +114,7 @@ def create_proof_of_travel(mocker,histories_shared_trip,incentives):
             if i == history.occ_details_pickle[0]["start_path_index"]:
                 dict["driver_start_latitude"] = history.path_json[i][1]
                 dict["driver_start_longitude"] = history.path_json[i][0]
-            elif i == history.occ_details_pickle[0]["arrival_path_index"]:
+            if i == history.occ_details_pickle[0]["arrival_path_index"]:
                 dict["driver_end_latitude"] = history.path_json[i][1]
                 dict["driver_end_longitude"] = history.path_json[i][0]
 
@@ -151,31 +151,31 @@ def create_proof_of_travel(mocker,histories_shared_trip,incentives):
 @pytest.fixture()
 def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate):
     proof = getProofByUser(get_user_sht.id)
-    wtrip_list = db.session.query(Wtrip_list, Shared_trip)\
+    wtrip_sht = db.session.query(Wtrip_list, Shared_trip)\
         .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id) \
         .filter((Wtrip_list.id == proof.wtrip_list_id)
                 & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
                 & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)).first()
-    yield wtrip_list
+    yield wtrip_sht
 
 @pytest.fixture()
 def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate):
-    proof = getProofByUser(get_passenger_sht.id)
-    wtrip_list = db.session.query(Wtrip_list, Shared_trip)\
+    proofs = getProofByUser(get_passenger_sht.id)
+    wtrip_sht = db.session.query(Wtrip_list, Shared_trip)\
         .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id) \
-        .filter((Wtrip_list.id == proof.wtrip_list_id)
+        .filter((Wtrip_list.id == proofs.wtrip_list_id)
                 & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
                 & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)).first()
-    yield wtrip_list
+    yield wtrip_sht
 
 
-def test_create_proof_OK(mocker,history_shared_trip,incentives,get_wtriplist_passenger):
+def test_create_proof_OK(mocker,history_shared_trip,incentives,get_sht_terminate_candidate):
     dict = {}
     for i in range(len(history_shared_trip.path_json)):
         if i == history_shared_trip.occ_details_pickle[0]["start_path_index"]:
             dict["driver_start_latitude"] = history_shared_trip.path_json[i][1]
             dict["driver_start_longitude"] = history_shared_trip.path_json[i][0]
-        elif i == history_shared_trip.occ_details_pickle[0]["arrival_path_index"]:
+        if i == history_shared_trip.occ_details_pickle[0]["arrival_path_index"]:
             dict["driver_end_latitude"] = history_shared_trip.path_json[i][1]
             dict["driver_end_longitude"] = history_shared_trip.path_json[i][0]
 
@@ -213,7 +213,7 @@ def test_create_proof_OK(mocker,history_shared_trip,incentives,get_wtriplist_pas
     db.session.commit()
     result = {"id": proof.id, "status": "success", "message": "Proof of travel created"}, 200
     mock_createProof = mocker.patch("main.service.proof_of_travel_service.createProof", return_value=result)
-    mock_createProof(history_shared_trip.driver_id, history_shared_trip.passenger_id, get_wtriplist_passenger[1].trip_id)
+    mock_createProof(history_shared_trip.driver_id, history_shared_trip.passenger_id, get_sht_terminate_candidate["shared_trip"].trip_id)
     assert mock_createProof.return_value == result
 
 def test_create_proof_not_OK(mocker,history_shared_trip,get_wtriplist_passenger):
