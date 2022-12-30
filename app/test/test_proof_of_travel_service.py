@@ -218,7 +218,7 @@ def test_create_proof_OK(mocker,history_shared_trip,incentives_proof,get_sht_ter
                             passenger_seats=1,
                             passenger_contribution=0,
                             driver_revenue=0,
-                            incentive_id=88,
+                            incentive_id=incentives_proof.id,
                             wtrip_list_id=history_shared_trip.wtrip_list_id
                             )
     db.session.add(proof)
