@@ -185,44 +185,46 @@ def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate,proof_
 
 def test_create_proof_OK(mocker,history_shared_trip,incentives_proof,get_sht_terminate_candidate):
     dict = {}
-    for i in range(len(history_shared_trip.path_json)):
-        if i == history_shared_trip.occ_details_pickle[0]["start_path_index"]:
-            dict["driver_start_latitude"] = history_shared_trip.path_json[i][1]
-            dict["driver_start_longitude"] = history_shared_trip.path_json[i][0]
-        if i == history_shared_trip.occ_details_pickle[0]["arrival_path_index"]:
-            dict["driver_end_latitude"] = history_shared_trip.path_json[i][1]
-            dict["driver_end_longitude"] = history_shared_trip.path_json[i][0]
+    histori = db.session.query(History, Incentives) \
+        .join(Incentives, Incentives.wtrip_list_id == history_shared_trip.wtrip_list_id) \
+        .filter((incentives_proof.id == history_shared_trip.wtrip_list_id)).first()
+    for i in range(len(histori[0].path_json)):
+        if i == histori[0].occ_details_pickle[0]["start_path_index"]:
+            dict["driver_start_latitude"] = histori[0].path_json[i][1]
+            dict["driver_start_longitude"] = histori[0].path_json[i][0]
+        if i == histori[0].occ_details_pickle[0]["arrival_path_index"]:
+            dict["driver_end_latitude"] = histori[0].path_json[i][1]
+            dict["driver_end_longitude"] = histori[0].path_json[i][0]
 
-        if i == history_shared_trip.occ_details_pickle[len(history_shared_trip.occ_details_pickle) - 1]["start_path_index"]:
-            dict["passenger_start_latitude"] = history_shared_trip.path_json[i][1]
-            dict["passenger_start_longitude"] = history_shared_trip.path_json[i][0]
-        if i == history_shared_trip.occ_details_pickle[len(history_shared_trip.occ_details_pickle) - 1]["arrival_path_index"]:
-            dict["passenger_end_latitude"] = history_shared_trip.path_json[i][1]
-            dict["passenger_end_longitude"] = history_shared_trip.path_json[i][0]
-    proof = Proof_of_travel(
-            proof_class="C",
-            driver_id=history_shared_trip.driver_id,
-            driver_iso_start_time=history_shared_trip.occ_details_pickle[0]["start_time"].isoformat(),
-            driver_start_latitude=dict["driver_start_latitude"],
-            driver_start_longitude=dict["driver_start_longitude"],
-            driver_iso_end_time=history_shared_trip.occ_details_pickle[0]["arrival_time"].isoformat(),
-            driver_end_latitude=dict["driver_end_latitude"],
-            driver_end_longitude=dict["driver_end_longitude"],
-            passenger_id=history_shared_trip.passenger_id,
-            passenger_iso_start_time=history_shared_trip.occ_details_pickle[len(history_shared_trip.occ_details_pickle) - 1][
-                "start_time"].isoformat(),
-            passenger_start_latitude=dict["passenger_start_latitude"],
-            passenger_start_longitude=dict["passenger_start_longitude"],
-            passenger_iso_end_time=history_shared_trip.occ_details_pickle[len(history_shared_trip.occ_details_pickle) - 1][
-                "arrival_time"].isoformat(),
-            passenger_end_latitude=dict["passenger_end_latitude"],
-            passenger_end_longitude=dict["passenger_end_longitude"],
-            passenger_seats=1,
-            passenger_contribution=0,
-            driver_revenue=0,
-            incentive_id=incentives_proof.id,
-            wtrip_list_id=history_shared_trip.wtrip_list_id
-            )
+        if i == histori[0].occ_details_pickle[len(histori[0].occ_details_pickle) - 1]["start_path_index"]:
+            dict["passenger_start_latitude"] = histori[0].path_json[i][1]
+            dict["passenger_start_longitude"] = histori[0].path_json[i][0]
+        if i == histori[0].occ_details_pickle[len(histori[0].occ_details_pickle) - 1]["arrival_path_index"]:
+            dict["passenger_end_latitude"] = histori[0].path_json[i][1]
+            dict["passenger_end_longitude"] = histori[0].path_json[i][0]
+    proof = Proof_of_travel(proof_class="C",
+                            driver_id=histori[0].driver_id,
+                            driver_iso_start_time=histori[0].occ_details_pickle[0]["start_time"],
+                            driver_start_latitude=dict["driver_start_latitude"],
+                            driver_start_longitude=dict["driver_start_longitude"],
+                            driver_iso_end_time=histori[0].occ_details_pickle[0]["arrival_time"],
+                            driver_end_latitude=dict["driver_end_latitude"],
+                            driver_end_longitude=dict["driver_end_longitude"],
+                            passenger_id=histori[0].passenger_id,
+                            passenger_iso_start_time=
+                            histori[0].occ_details_pickle[len(histori[0].occ_details_pickle) - 1]["start_time"],
+                            passenger_start_latitude=dict["passenger_start_latitude"],
+                            passenger_start_longitude=dict["passenger_start_longitude"],
+                            passenger_iso_end_time=
+                            histori[0].occ_details_pickle[len(histori[0].occ_details_pickle) - 1]["arrival_time"],
+                            passenger_end_latitude=dict["passenger_end_latitude"],
+                            passenger_end_longitude=dict["passenger_end_longitude"],
+                            passenger_seats=1,
+                            passenger_contribution=0,
+                            driver_revenue=0,
+                            incentive_id=histori[1].id,
+                            wtrip_list_id=histori[0].wtrip_list_id
+                            )
     db.session.add(proof)
     db.session.commit()
     result = {"id": proof.id, "status": "success", "message": "Proof of travel created"}, 200
