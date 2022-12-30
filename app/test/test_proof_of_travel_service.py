@@ -37,13 +37,6 @@ from main.service.incentive_service import (
     get_incentives_by_wtrip
 )
 from . import *
-from pytest_mock import *
-
-
-
-
-
-
 
 
 @pytest.fixture()
@@ -88,18 +81,18 @@ def incentives_created(get_user_sht,get_passenger_sht,get_sht_terminate_candidat
 
 
 @pytest.fixture()
-def incentive_driver():
-    incentive = get_incentive()
+def incentive_driver(get_user_sht):
+    incentive = get_incentives_by_user(get_user_sht.id)[0]
     yield incentive
 
 @pytest.fixture()
-def incentive_passenger(incentive_passenger_created):
-    incentive = get_incentive(incentive_passenger_created)
+def incentive_passenger(get_passenger_sht):
+    incentive = get_incentives_by_user(get_passenger_sht.id)[0]
     yield incentive
 
 @pytest.fixture()
-def incentives(incentives_created):
-    incentive = get_incentives_by_id(incentives_created)
+def incentives(get_sht_terminate_candidate):
+    incentive = get_incentives_by_wtrip(get_sht_terminate_candidate["wtrip_list"].id)
     yield incentive
 
 @pytest.fixture()
