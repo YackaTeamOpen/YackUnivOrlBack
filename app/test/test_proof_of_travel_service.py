@@ -31,11 +31,9 @@ from main.service.incentive_service import (
     get_incentive,
     get_incentives_by_id,
     get_incentives_by_user,
-    get_incentivesDriver,
-    get_incentivesPassenger,
-    get_incentives,
     get_incentives_by_wtrip
 )
+from pytest_mock import mocker
 from . import *
 
 
