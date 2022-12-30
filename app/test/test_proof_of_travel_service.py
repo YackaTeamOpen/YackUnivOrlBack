@@ -149,21 +149,30 @@ def create_proof_of_travel(histories_shared_trip,incentives_proof):
     yield proofs
 
 @pytest.fixture()
-def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate):
+def proof_driver(get_user_sht):
     proof = getProofByUser(get_user_sht.id)
+    yield proof
+
+@pytest.fixture()
+def proof_passenger(get_passenger_sht):
+    proof = getProofByUser(get_passenger_sht.id)
+    yield proof
+
+@pytest.fixture()
+def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate,proof_driver):
     wtrip_sht = db.session.query(Wtrip_list, Shared_trip)\
         .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id)\
-        .filter((Wtrip_list.id == proof.wtrip_list_id)
+        .filter((Wtrip_list.id == proof_driver.wtrip_list_id)
                 & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
-                & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)).first()
+                & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)
+                ).first()
     yield wtrip_sht
 
 @pytest.fixture()
-def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate):
-    proofs = getProofByUser(get_passenger_sht.id)
+def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate,proof_passenger):
     wtrip_sht = db.session.query(Wtrip_list, Shared_trip)\
         .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id)\
-        .filter((Wtrip_list.id == proofs.wtrip_list_id)
+        .filter((Wtrip_list.id == proof_passenger.wtrip_list_id)
                 & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
                 & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id))\
         .first()
