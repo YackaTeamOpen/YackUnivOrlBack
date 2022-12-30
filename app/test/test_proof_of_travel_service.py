@@ -36,6 +36,7 @@ from main.service.incentive_service import (
 )
 from pytest_mock import mocker
 from main import db
+from . import *
 
 
 @pytest.fixture()
