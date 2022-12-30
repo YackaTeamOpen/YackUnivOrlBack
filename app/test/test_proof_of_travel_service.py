@@ -106,7 +106,6 @@ def history_shared_trip(get_sht_terminate_candidate):
 @pytest.fixture()
 def create_proof_of_travel(histories_shared_trip,incentives_proof,get_sht_terminate_candidate):
     dict={}
-    proofs=[]
     for history in histories_shared_trip:
         histori = db.session.query(History,Incentives)\
             .join(Incentives, Incentives.wtrip_list_id == history.wtrip_list_id)\
