@@ -42,4 +42,4 @@ jobs:
       - name: Install pytest-mock
         run: pip install pytest-mock
       - name: Run tests
-        run: pytest test_proof_of_travel_service.py
+        run: pytest app/test/test_proof_of_travel_service.py
