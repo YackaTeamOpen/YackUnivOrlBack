@@ -142,7 +142,7 @@ def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate):
                 passenger_seats=1,
                 passenger_contribution=0,
                 driver_revenue=0,
-                incentive_id=histori[1].id,
+                incentive_id=3,
                 wtrip_list_id=histori[0].wtrip_list_id
         )
         db.session.add(proof)
@@ -185,9 +185,10 @@ def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate,proof_
 
 def test_create_proof_OK(mocker,history_shared_trip,incentives_proof,get_sht_terminate_candidate):
     dict = {}
-    histori = db.session.query(History, Incentives) \
+    histori = db.session.query(History, Incentives)\
         .join(Incentives, Incentives.wtrip_list_id == history_shared_trip.wtrip_list_id) \
         .filter((Incentives.wtrip_list_id == history_shared_trip.wtrip_list_id)).first()
+    print(histori)
     for i in range(len(histori[0].path_json)):
         if i == histori[0].occ_details_pickle[0]["start_path_index"]:
             dict["driver_start_latitude"] = histori[0].path_json[i][1]
@@ -222,7 +223,7 @@ def test_create_proof_OK(mocker,history_shared_trip,incentives_proof,get_sht_ter
                             passenger_seats=1,
                             passenger_contribution=0,
                             driver_revenue=0,
-                            incentive_id=histori[1].id,
+                            incentive_id=3,
                             wtrip_list_id=histori[0].wtrip_list_id
                             )
     db.session.add(proof)
