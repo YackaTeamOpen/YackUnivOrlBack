@@ -5,8 +5,8 @@ from main.model.incentive import Incentive
 from main.model.incentives import Incentives
 from main.model.history import History
 from main.model.wtrip_list import Wtrip_list
-from main.model.proof_of_travel import Proof_of_travel
 from main.model.shared_trip import Shared_trip
+from main.model.proof_of_travel import Proof_of_travel
 from main.service.user_service import setup_password,getUserByEmail,getUserById
 from main.service.proof_of_travel_service import (
     list_shared_trip_terminate_candidates,
@@ -145,12 +145,14 @@ def create_proof_of_travel(histories_shared_trip,incentives_proof):
         )
         db.session.add(proof)
         db.session.commit()
+        proofs.append(proof)
+    yield proofs
 
 @pytest.fixture()
 def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate):
     proof = getProofByUser(get_user_sht.id)
     wtrip_sht = db.session.query(Wtrip_list, Shared_trip)\
-        .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id) \
+        .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id)\
         .filter((Wtrip_list.id == proof.wtrip_list_id)
                 & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
                 & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)).first()
@@ -160,10 +162,11 @@ def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate):
 def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate):
     proofs = getProofByUser(get_passenger_sht.id)
     wtrip_sht = db.session.query(Wtrip_list, Shared_trip)\
-        .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id) \
+        .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id)\
         .filter((Wtrip_list.id == proofs.wtrip_list_id)
                 & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
-                & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)).first()
+                & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id))\
+        .first()
     yield wtrip_sht
 
 
