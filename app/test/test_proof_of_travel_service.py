@@ -22,6 +22,7 @@ from main.service.proof_of_travel_service import (
     getNbKmByUserAsPassenger
 
 )
+from datetime import datetime
 from main.service.trip_service import getTripById
 from main.service.history_service import get_history_by_shared_trip_id
 from main.service.path_when_service import estimate_real_distance_between,make_path_point_tuple_from_trip
@@ -90,8 +91,8 @@ def incentive_passenger(get_passenger_sht):
 
 @pytest.fixture()
 def incentives_proof(get_sht_terminate_candidate):
-    incentive = get_incentives_by_wtrip(get_sht_terminate_candidate["wtrip_list"].id)
-    yield incentive
+    incentives = get_incentives_by_wtrip(get_sht_terminate_candidate["wtrip_list"].id)
+    yield incentives
 
 @pytest.fixture()
 def histories_shared_trip(get_sht_terminate_candidate):
@@ -103,8 +104,8 @@ def history_shared_trip(get_sht_terminate_candidate):
     history = get_history_by_shared_trip_id(get_sht_terminate_candidate["shared_trip"].id)[0]
     yield history
 
-@pytest.fixture()
-def create_proof_of_travel(histories_shared_trip,incentives_proof):
+@pytest.fixture(scope="module")
+def create_proof_of_travel(histories_shared_trip,incentives_proof,get_sht_terminate_candidate):
     dict={}
     proofs=[]
     for history in histories_shared_trip:
@@ -124,17 +125,17 @@ def create_proof_of_travel(histories_shared_trip,incentives_proof):
                 dict["passenger_end_longitude"] = history.path_json[i][0]
         proof = Proof_of_travel(proof_class="C",
                 driver_id=history.driver_id,
-                driver_iso_start_time=history.occ_details_pickle[0]["start_time"].isoformat(),
+                driver_iso_start_time=history.occ_details_pickle[0]["start_time"],
                 driver_start_latitude=dict["driver_start_latitude"],
                 driver_start_longitude=dict["driver_start_longitude"],
-                driver_iso_end_time=history.occ_details_pickle[0]["arrival_time"].isoformat(),
+                driver_iso_end_time=history.occ_details_pickle[0]["arrival_time"],
                 driver_end_latitude=dict["driver_end_latitude"],
                 driver_end_longitude=dict["driver_end_longitude"],
                 passenger_id=history.passenger_id,
-                passenger_iso_start_time=history.occ_details_pickle[len(history.occ_details_pickle) - 1]["start_time"].isoformat(),
+                passenger_iso_start_time=history.occ_details_pickle[len(history.occ_details_pickle) - 1]["start_time"],
                 passenger_start_latitude=dict["passenger_start_latitude"],
                 passenger_start_longitude=dict["passenger_start_longitude"],
-                passenger_iso_end_time=history.occ_details_pickle[len(history.occ_details_pickle) - 1]["arrival_time"].isoformat(),
+                passenger_iso_end_time=history.occ_details_pickle[len(history.occ_details_pickle) - 1]["arrival_time"],
                 passenger_end_latitude=dict["passenger_end_latitude"],
                 passenger_end_longitude=dict["passenger_end_longitude"],
                 passenger_seats=1,
@@ -235,6 +236,7 @@ def test_create_proof_not_OK(mocker,history_shared_trip,get_wtriplist_passenger)
     assert mock_createProof.return_value == result
 def test_get_all_proof_OK():
     proofs = getAllProof()
+    print(proofs)
     assert len(proofs) != 0
 
 
