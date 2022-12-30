@@ -104,12 +104,12 @@ def history_shared_trip(get_sht_terminate_candidate):
     yield history
 
 @pytest.fixture()
-def create_proof_of_travel(histories_shared_trip,incentives_proof,get_sht_terminate_candidate):
+def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate):
     dict={}
     for history in histories_shared_trip:
         histori = db.session.query(History,Incentives)\
             .join(Incentives, Incentives.wtrip_list_id == history.wtrip_list_id)\
-            .filter((incentives_proof.id == history.wtrip_list_id)).first()
+            .filter((Incentives.wtrip_list_id == history.wtrip_list_id)).first()
         for i in range(len(histori[0].path_json)):
             if i == histori[0].occ_details_pickle[0]["start_path_index"]:
                 dict["driver_start_latitude"] = histori[0].path_json[i][1]
@@ -187,7 +187,7 @@ def test_create_proof_OK(mocker,history_shared_trip,incentives_proof,get_sht_ter
     dict = {}
     histori = db.session.query(History, Incentives) \
         .join(Incentives, Incentives.wtrip_list_id == history_shared_trip.wtrip_list_id) \
-        .filter((incentives_proof.id == history_shared_trip.wtrip_list_id)).first()
+        .filter((Incentives.wtrip_list_id == history_shared_trip.wtrip_list_id)).first()
     for i in range(len(histori[0].path_json)):
         if i == histori[0].occ_details_pickle[0]["start_path_index"]:
             dict["driver_start_latitude"] = histori[0].path_json[i][1]
