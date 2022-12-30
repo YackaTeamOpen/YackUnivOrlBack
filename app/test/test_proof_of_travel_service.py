@@ -148,6 +148,26 @@ def create_proof_of_travel(mocker,histories_shared_trip,incentives):
         db.session.add(proof)
         db.session.commit()
 
+@pytest.fixture()
+def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate):
+    proof = getProofByUser(get_user_sht.id)
+    wtrip_list = db.session.query(Wtrip_list, Shared_trip)\
+        .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id) \
+        .filter((Wtrip_list.id == proof.wtrip_list_id)
+                & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
+                & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)).first()
+    yield wtrip_list
+
+@pytest.fixture()
+def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate):
+    proof = getProofByUser(get_passenger_sht.id)
+    wtrip_list = db.session.query(Wtrip_list, Shared_trip)\
+        .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id) \
+        .filter((Wtrip_list.id == proof.wtrip_list_id)
+                & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
+                & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)).first()
+    yield wtrip_list
+
 
 def test_create_proof_OK(mocker,history_shared_trip,incentives,get_wtriplist_passenger):
     dict = {}
@@ -201,26 +221,6 @@ def test_create_proof_not_OK(mocker,history_shared_trip,get_wtriplist_passenger)
     mock_createProof = mocker.patch("main.service.proof_of_travel_service.createProof", return_value=result)
     mock_createProof(history_shared_trip.driver_id, history_shared_trip.passenger_id, get_wtriplist_passenger[1].trip_id)
     assert mock_createProof.return_value == result
-
-@pytest.fixture()
-def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate):
-    proof = getProofByUser(get_user_sht.id)
-    wtrip_list = db.session.query(Wtrip_list, Shared_trip)\
-        .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id) \
-        .filter((Wtrip_list.id == proof.wtrip_list_id)
-                & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
-                & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)).first()
-    yield wtrip_list
-
-@pytest.fixture()
-def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate):
-    proof = getProofByUser(get_passenger_sht.id)
-    wtrip_list = db.session.query(Wtrip_list, Shared_trip)\
-        .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id) \
-        .filter((Wtrip_list.id == proof.wtrip_list_id)
-                & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
-                & (Wtrip_list.id == get_sht_terminate_candidate["wtrip_list"].id)).first()
-    yield wtrip_list
 def test_get_all_proof_OK():
     proofs = getAllProof()
     assert len(proofs) != 0
