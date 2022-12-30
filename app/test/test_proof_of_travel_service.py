@@ -80,19 +80,19 @@ def incentives_created(get_user_sht,get_passenger_sht,get_sht_terminate_candidat
 
 
 @pytest.fixture()
-def incentive_driver(get_user_sht):
-    incentive = get_incentives_by_user(get_user_sht.id)[0]
+def incentive_driver(incentive_driver_created):
+    incentive = get_incentive(incentive_driver_created)
     yield incentive
 
 @pytest.fixture()
-def incentive_passenger(get_passenger_sht):
-    incentive = get_incentives_by_user(get_passenger_sht.id)[0]
+def incentive_passenger(incentive_passenger_created):
+    incentive = get_incentive(incentive_passenger_created)
     yield incentive
 
 @pytest.fixture()
-def incentives_proof(get_passenger_sht, get_user_sht,get_sht_terminate_candidate):
-    incentives = get_incentives(get_user_sht.id,get_passenger_sht.id,get_sht_terminate_candidate["wtrip_list"].id)
-    yield incentives
+def incentives(incentives_created):
+    incentive = get_incentives_by_id(incentives_created)
+    yield incentive
 
 @pytest.fixture()
 def histories_shared_trip(get_sht_terminate_candidate):
@@ -105,7 +105,7 @@ def history_shared_trip(get_sht_terminate_candidate):
     yield history
 
 @pytest.fixture()
-def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,incentives_proof):
+def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,incentives):
     dict={}
     for history in histories_shared_trip:
         for i in range(len(history.path_json)):
@@ -140,7 +140,7 @@ def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,inc
                 passenger_seats=1,
                 passenger_contribution=0,
                 driver_revenue=0,
-                incentive_id=incentives_proof.id,
+                incentive_id=incentives.id,
                 wtrip_list_id=history.wtrip_list_id
         )
         db.session.add(proof)
@@ -148,20 +148,17 @@ def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,inc
 
 
 
+
 @pytest.fixture()
-def proof_driver(get_user_sht):
+def proof(create_proof_of_travel):
+    proof = getProofById(create_proof_of_travel.id)
+    yield proof
+
+@pytest.fixture()
+def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate):
     proof = getProofByUser(get_user_sht.id)
-    yield proof
-
-@pytest.fixture()
-def proof_passenger(get_passenger_sht):
-    proof = getProofByUser(get_passenger_sht.id)
-    yield proof
-
-@pytest.fixture()
-def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate,proof_driver):
     wtrip_sht = db.session.query(Wtrip_list, Shared_trip)\
-        .join(Proof_of_travel, Wtrip_list.id==proof_driver.wtrip_list_id)\
+        .join(Proof_of_travel, Wtrip_list.id==proof.wtrip_list_id)\
         .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id)\
         .filter((Wtrip_list.id == proof_driver.wtrip_list_id)
                 & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
@@ -170,9 +167,10 @@ def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate,proof_driver):
     yield wtrip_sht
 
 @pytest.fixture()
-def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate,proof_passenger):
+def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate):
+    proof = getProofByUser(get_passenger_sht.id)
     wtrip_sht = db.session.query(Wtrip_list, Shared_trip,Proof_of_travel)\
-        .join(Proof_of_travel, Wtrip_list.id==proof_passenger.wtrip_list_id)\
+        .join(Proof_of_travel, Wtrip_list.id==proof.wtrip_list_id)\
         .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id)\
         .filter(
                 (Wtrip_list.id == proof_passenger.wtrip_list_id) & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
@@ -181,7 +179,7 @@ def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate,proof_
     yield wtrip_sht
 
 
-def test_create_proof_OK(mocker,history_shared_trip,incentives_proof,get_sht_terminate_candidate):
+def test_create_proof_OK(mocker,history_shared_trip,incentives,get_sht_terminate_candidate):
     dict = {}
 
     for i in range(len(history_shared_trip.path_json)):
@@ -218,7 +216,7 @@ def test_create_proof_OK(mocker,history_shared_trip,incentives_proof,get_sht_ter
                             passenger_seats=1,
                             passenger_contribution=0,
                             driver_revenue=0,
-                            incentive_id=incentives_proof.id,
+                            incentive_id=incentives.id,
                             wtrip_list_id=history_shared_trip.wtrip_list_id
                             )
     db.session.add(proof)
