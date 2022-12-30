@@ -6,8 +6,6 @@ from main.model.shared_trip import Shared_trip
 from main.model.wtrip_list import Wtrip_list
 from main.model.incentive import Incentive
 from main.model.user import User
-from main.service.status_manager_service import Sht_wtl_whole
-from main.service.trip_service import getAllAnonymizedTrips
 from main.service.shared_trip_service import pay_ratio
 from main.service.incentive_service import (
     get_incentivesPassenger,
