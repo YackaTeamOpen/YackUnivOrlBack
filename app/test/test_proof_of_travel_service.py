@@ -163,7 +163,7 @@ def proof_passenger(get_passenger_sht):
 @pytest.fixture()
 def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate,proof_driver):
     wtrip_sht = db.session.query(Wtrip_list, Shared_trip)\
-        .join(Proof_of_travel, Wtrip_list.id==proof_driver.wtrip_list_id)\
+        .join(Proof_of_travel, Wtrip_list.id==proof_driver.wtrip_list_id,Proof_of_travel)\
         .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id)\
         .filter((Wtrip_list.id == proof_driver.wtrip_list_id)
                 & (Wtrip_list.shared_trip_id == get_sht_terminate_candidate["shared_trip"].id)
@@ -173,7 +173,7 @@ def get_wtriplist_driver(get_user_sht,get_sht_terminate_candidate,proof_driver):
 
 @pytest.fixture()
 def get_wtriplist_passenger(get_passenger_sht,get_sht_terminate_candidate,proof_passenger):
-    wtrip_sht = db.session.query(Wtrip_list, Shared_trip)\
+    wtrip_sht = db.session.query(Wtrip_list, Shared_trip,Proof_of_travel)\
         .join(Proof_of_travel, Wtrip_list.id==proof_passenger.wtrip_list_id)\
         .join(Shared_trip, Shared_trip.id == Wtrip_list.shared_trip_id)\
         .filter(
