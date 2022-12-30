@@ -8,8 +8,8 @@ class Incentives(db.Model):
     __tablename__ = "incentives"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    incentive_driver_id = db.Column(db.Integer, db.ForeignKey("incentive.id"), nullable=True)
-    incentive_passenger_id = db.Column(db.Integer, db.ForeignKey("incentive.id"), nullable=True)
+    incentive_driver_id = db.Column(db.Integer, db.ForeignKey("incentive.id"), nullable=False)
+    incentive_passenger_id = db.Column(db.Integer, db.ForeignKey("incentive.id"), nullable=False)
     wtrip_list_id = db.Column(db.Integer, nullable=False)
 
 

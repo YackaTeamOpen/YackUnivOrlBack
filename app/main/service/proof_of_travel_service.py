@@ -152,11 +152,11 @@ def getProofByUser(user_id):
 
 def getNbProofByUserAsDriver(user_id):
     proofs = Proof_of_travel.query.filter_by(driver_id=user_id)
-    return len(proofs)
+    return proofs.count()
 
 def getNbProofByUserAsPassenger(user_id):
     proofs = Proof_of_travel.query.filter_by(passenger_id=user_id)
-    return len(proofs)
+    return proofs.count()
 
 def getNbKmByUserAsDriver(user_id):
     proofs = Proof_of_travel.query.filter_by(driver_id=user_id)
