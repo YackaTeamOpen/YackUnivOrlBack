@@ -9,10 +9,6 @@ jobs:
     env:
       DB_USER: root
       DB_PASSWORD: root
-    defaults:
-      run:
-        shell: bash
-        working-directory: app/test
     steps:
       - uses: actions/checkout@v3
       - name: Set Up Python 3.7.11
