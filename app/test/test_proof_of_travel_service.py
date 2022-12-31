@@ -83,18 +83,18 @@ def incentives_created(get_sht_terminate_candidate,incentive_passenger_created,i
 
 
 @pytest.fixture()
-def incentive_driver(get_user_sht):
-    incentive = get_incentives_by_user(get_user_sht.id)
+def incentive_driver(incentive_driver_created):
+    incentive = get_incentive(incentive_driver_created)
     yield incentive
 
 @pytest.fixture()
-def incentive_passenger(get_passenger_sht):
-    incentive = get_incentives_by_user(get_passenger_sht.id)
+def incentive_passenger(incentive_passenger_created):
+    incentive = get_incentive(incentive_passenger_created)
     yield incentive
 
 @pytest.fixture()
-def incentives(get_sht_terminate_candidate):
-    incentive = get_incentives_by_wtrip(get_sht_terminate_candidate["wtrip_list"].id)
+def incentives(incentives_created):
+    incentive = get_incentives_by_id(incentives_created)
     yield incentive
 
 @pytest.fixture()
