@@ -242,8 +242,8 @@ def test_get_all_proof_OK():
 
 
 def test_get_proof_by_id_OK():
-    id=1
-    proofs = getProofById(1)
+    id=2
+    proofs = getProofById(2)
     assert proofs.id is not None
     
 
