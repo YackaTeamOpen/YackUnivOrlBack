@@ -110,6 +110,7 @@ def history_shared_trip(get_sht_terminate_candidate):
 @pytest.fixture()
 def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,incentives):
     dict={}
+    proofs=[]
     for history in histories_shared_trip:
         for i in range(len(history.path_json)):
             if i == history.occ_details_pickle[0]["start_path_index"]:
@@ -148,14 +149,15 @@ def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,inc
         )
         db.session.add(proof)
         db.session.commit()
-    yield proof
+        proofs.append(proof)
+    yield proofs
 
 
 
 
 @pytest.fixture()
 def proof(create_proof_of_travel):
-    proof = getProofById(create_proof_of_travel.id)
+    proof = getProofById(create_proof_of_travel[0].id)
     yield proof
 
 @pytest.fixture()
@@ -241,9 +243,8 @@ def test_get_all_proof_OK():
     assert len(proofs) != 0
 
 
-def test_get_proof_by_id_OK():
-    id=2
-    proofs = getProofById(2)
+def test_get_proof_by_id_OK(proof):
+    proofs = getProofById(proof.id)
     assert proofs.id is not None
     
 
