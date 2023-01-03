@@ -62,7 +62,6 @@ def get_passenger_sht(get_sht_terminate_candidate):
     yield passenger
 
 
-
 @pytest.fixture()
 def incentive_driver_created(get_user_sht):
     incentive = create_incentive(50,get_user_sht.id)

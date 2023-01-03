@@ -75,27 +75,27 @@ def test_proof_of_travel_unauthorized(client,get_user_sht,get_sht_terminate_cand
     assert proof.status_code == 401
 
 
-def test_get_proof_of_travel_by_id(client,get_id_proof_driver):
+def test_get_proof_of_travel_by_id(client,get_user_sht,get_id_proof_driver):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
-    proof = client.post("/proof/"+str(get_id_proof_driver))
+    proof = client.get("/proof/"+str(get_id_proof_driver))
     assert proof.status_code == 200
 
 
 def test_get_proof_of_travel_by_id_unauthorized(client,get_user_sht,get_id_proof_driver):
-    proof = client.post("/proof/"+str(get_id_proof_driver))
+    proof = client.get("/proof/"+str(get_id_proof_driver))
     assert proof.status_code == 401
 
 def test_modify_proof_of_travel(client,get_user_sht,get_id_proof_driver):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
-    proof = client.post("/proof/"+str(get_id_proof_driver))
+    proof = client.put("/proof/"+str(get_id_proof_driver))
     assert proof.status_code == 200
 
 def test_modify_proof_of_travel_unauthorized(client,get_id_proof_driver):
-    proof = client.post("/proof/"+str(get_id_proof_driver))
+    proof = client.put("/proof/"+str(get_id_proof_driver))
     assert proof.status_code == 401
 
 
@@ -103,11 +103,11 @@ def test_count_proofs_by_company(client,get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
-    nb = client.post("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id))
+    nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id))
     assert nb.status_code == 200
 
 def test_count_proofs_by_company_unauthorized(client,get_user_sht):
-    nb = client.post("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id))
+    nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id))
     assert nb.status_code == 401
 
 
@@ -115,20 +115,20 @@ def test_count_proofs_by_driver(client,get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
-    nb = client.post("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id)+"/driver")
+    nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id)+"/driver")
     assert nb.status_code == 200
 
 def test_count_proofs_by_driver_unauthorized(client,get_user_sht):
-    nb = client.post("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id)+"/driver")
+    nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id)+"/driver")
     assert nb.status_code == 401
 
 def test_count_proofs_by_passenger(client,get_passenger_sht):
     client.post("/login", data=dict(email=get_passenger_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
-    nb = client.post("/proof/"+str(get_passenger_sht.organization_id)+"/counts/"+str(get_passenger_sht.id)+"/passenger")
+    nb = client.get("/proof/"+str(get_passenger_sht.organization_id)+"/counts/"+str(get_passenger_sht.id)+"/passenger")
     assert nb.status_code == 200
 
 def test_count_proofs_by_passenger_unauthorized(client,get_passenger_sht):
-    nb = client.post("/proof/"+str(get_passenger_sht.organization_id)+"/counts/"+str(get_passenger_sht.id)+"/passenger")
+    nb = client.get("/proof/"+str(get_passenger_sht.organization_id)+"/counts/"+str(get_passenger_sht.id)+"/passenger")
     assert nb.status_code == 401
