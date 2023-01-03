@@ -24,6 +24,10 @@ from main.service.history_service import (
     get_history_by_shared_trip_id,
 )
 
+from main.service.proof_of_travel_service import getAllProof,getProofByUser,create_proof_of_travel
+
+from main.service.incentive_service import create_incentive, create_incentives
+
 
 def test(test_type, arg=None, arg2=None, arg3=None, arg4=None, arg5=None):
     """ Runs a sequence of tests mentionned by test_type.
@@ -233,5 +237,53 @@ def test(test_type, arg=None, arg2=None, arg3=None, arg4=None, arg5=None):
             return None
         terminate_a_shared_trip(arg)
         return True
+    if test_type in ["trips"]:
+        trip = get_a_shared_trip(1)
+        print(trip)
+        return True
+
+    def list_terminated_sht_proof_of_travel():
+        shared_trips_wtrip_lists_terminated = (
+            db.session.query(Shared_trip, Wtrip_list)
+                .join(Wtrip_list, Shared_trip.id == Wtrip_list.shared_trip_id)
+                .filter(Shared_trip.shared_trip_status=="terminated")
+                .all()
+        )
+        proofs_of_travel=[]
+        for s,w in shared_trips_wtrip_lists_terminated:
+            sht_whole = Sht_wtl_whole(s,w)
+            if sht_whole.is_ok:
+                proof = get_proof_of_travel_by_wtl_id(sht_whole.wtl.id)
+                proofs_of_travel.append("Proof of travel of the shared trip {}: {}".format(
+                    sht_whole.sht.id,proof)
+                )
+        if (len(proofs_of_travel)>0):
+            print(proofs_of_travel)
+        else:
+            print("Number of terminated shared trip : {}".format(
+                len(shared_trips_wtrip_lists_terminated)
+            ))
+
+    if test_type in ["proof_of_travel"]:
+        list_terminated_sht_proof_of_travel()
+        return True
+
+    if test_type in ["list_proof_of_travel"]:
+        print(getAllProof())
+        return True
+
+    if test_type in ["create_incentive"]:
+        create_incentive(arg,arg2)
+        return True
+
+    if test_type in ["create_incentives"]:
+        create_incentives(arg,arg2,arg3)
+        return True
+
+    if test_type in ["create_proof_of_travel"]:
+        create_proof_of_travel(arg)
+        return True
+
+
 
     return None

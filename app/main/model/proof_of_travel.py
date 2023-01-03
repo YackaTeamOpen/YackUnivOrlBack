@@ -34,7 +34,7 @@ class Proof_of_travel(db.Model):
     # Selon les CGU, les incentives seraient un tableau, donc au cas où, on prévoit
     # une foreignkey, mais on commente.
     incentive_id = db.Column(db.Integer,
-        #db.ForeignKey('something.id'),
+        db.ForeignKey('incentives.id'),
         nullable=False)
     # Enfin un champ contenant la valeur du wtrip_list associé au shared_trip
     # d'origine, permettant de retrouver, grâce à la table history, les différents
@@ -44,3 +44,30 @@ class Proof_of_travel(db.Model):
 
     driver = db.relationship("User",foreign_keys=[driver_id])
     passenger = db.relationship("User",foreign_keys=[passenger_id])
+    incentive = db.relationship("Incentives",foreign_keys=[incentive_id])
+
+
+    def __repr__(self):
+        return "<Proof_of_travel {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} >".format(
+            self.id,
+            self.proof_class,
+            self.driver_id,
+            self.driver_iso_start_time,
+            self.driver_start_latitude,
+            self.driver_start_longitude,
+            self.driver_iso_end_time,
+            self.driver_end_latitude,
+            self.driver_end_longitude,
+            self.passenger_id,
+            self.passenger_iso_start_time,
+            self.passenger_start_latitude,
+            self.passenger_start_longitude,
+            self.passenger_iso_end_time,
+            self.passenger_end_latitude,
+            self.passenger_end_longitude,
+            self.passenger_seats,
+            self.passenger_contribution,
+            self.driver_revenue,
+            self.incentive_id,
+            self.wtrip_list_id
+        )
