@@ -34,3 +34,11 @@ def getNbKmByUserAsDriver(user_id):
 def getNbKmByUserAsPassenger(user_id):
     proofs = Proof_of_travel.query.filter_by(passenger_id=user_id)
     pass
+
+
+def save_changes(data):
+    db.session.add(data)
+    db.session.commit()
+
+def commit():
+    db.session.commit()

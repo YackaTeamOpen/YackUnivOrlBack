@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from flask_restx import Resource
 import logging
 
+from main.model.proof_of_travel import Proof_of_travel
 from main.util.dto import ProofOfTravelDto
 from main.service.proof_of_travel_service import (
     createProof,
@@ -26,13 +27,15 @@ api = ProofOfTravelDto.api
 
 @api.route("/create")
 class ProofOfTravel(Resource):
-    @login_required
-    @api.response(201, "Proof successfully created.")
-    @api.response(409, "Already created")
-    @api.response(401, "Unauthorized.")
+    # @login_required
+    @api.param('test', 'test')
+    # @api.response(201, "Proof successfully created.")
+    # @api.response(409, "Already created")
+    # @api.response(401, "Unauthorized.")
     def post(self):
         """Création d'une preuve de covoiturage"""
-        pass
+        data = request.form
+        return {data.get('test')}, 200
 
 
 @api.route("/<int:proof_of_travel_id>")
