@@ -14,6 +14,7 @@ from main.service.proof_of_travel_service import (
 
 log = logging.getLogger(__name__)
 api = ProofOfTravelDto.api
+get_proof_m = ProofOfTravelDto.get_proof
 
 
 # @api.route("/")
@@ -38,7 +39,7 @@ class ProofOfTravel(Resource):
         data = request.form
         proof = get_proof_of_travel_by_wtl_id(data.get("sht_id"))
         if len(proof) > 0:
-            return {}, 409
+            return {"status": "fail", "message": "Error"}, 409
         return create_proof_of_travel(data.get("sht_id"))
 
 
@@ -46,11 +47,18 @@ class ProofOfTravel(Resource):
 class ProofOfTravel2(Resource):
     @login_required
     @api.response(200, "Here is the proof.")
+    @api.response(404, "Not found.")
     @api.response(401, "Unauthorized.")
+    @api.marshal_with(get_proof_m)
     def get(self, proof_of_travel_id):
         """Récupération d'une preuve de covoiturage avec l'id associé"""
-
-        return {}, 200
+        proof = getProofById(proof_of_travel_id)
+        if proof == None :
+            return {}, 404
+        resp = {"proof": proof}
+        resp["status"] = "success"
+        resp["message"] = "Getting proof information"
+        return resp, 200
 
     @login_required
     @api.response(200, "Proof successfully updated.")
