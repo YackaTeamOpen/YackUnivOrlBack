@@ -6,7 +6,8 @@ import logging
 from main.model.proof_of_travel import Proof_of_travel
 from main.util.dto import ProofOfTravelDto
 from main.service.proof_of_travel_service import (
-    createProof,
+    create_proof_of_travel,
+    get_proof_of_travel_by_wtl_id,
     validateProof,
     getProofById
 )
@@ -28,12 +29,17 @@ api = ProofOfTravelDto.api
 @api.route("/create")
 class ProofOfTravel(Resource):
     @login_required
-    # @api.response(201, "Proof successfully created.")
-    # @api.response(409, "Already created")
+    @api.response(201, "Proof successfully created.")
+    @api.response(409, "Already created")
     @api.response(401, "Unauthorized.")
+    @api.param("sht_id", "Shared trip ID")
     def post(self):
         """Création d'une preuve de covoiturage"""
-        return {}, 201
+        data = request.form
+        proof = get_proof_of_travel_by_wtl_id(data.get("sht_id"))
+        if len(proof) > 0:
+            return {}, 409
+        return create_proof_of_travel(data.get("sht_id"))
 
 
 @api.route("/<int:proof_of_travel_id>")
