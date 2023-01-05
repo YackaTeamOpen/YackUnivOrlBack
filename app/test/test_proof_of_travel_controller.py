@@ -6,6 +6,18 @@ from main.service.proof_of_travel_service import (
     list_shared_trip_terminate_candidates,
     get_one_shared_trip_terminate_candidates
 )
+from main.model.incentive import Incentive
+from main.model.incentives import Incentives
+from main import db
+from main.service.incentive_service import (
+    create_incentive,
+    create_incentives,
+    get_incentive,
+    get_incentives,
+    get_incentives_by_id,
+    get_incentives_by_user,
+    get_incentives_by_wtrip
+)
 from main.service.history_service import get_history_by_shared_trip_id
 from main.service.proof_of_travel_service import getProofByUser
 from . import client
@@ -32,6 +44,44 @@ def get_passenger_sht(get_sht_terminate_candidate):
     history=get_history_by_shared_trip_id(get_sht_terminate_candidate["shared_trip"].id)[0]
     passenger=getUserById(history.passenger_id)
     yield passenger
+@pytest.fixture()
+def incentive_driver_created(get_user_sht):
+    incentive = create_incentive(50,get_user_sht.id)
+    yield incentive["id"]
+
+
+@pytest.fixture()
+def incentive_passenger_created(get_passenger_sht):
+    incentive = create_incentive(50,get_passenger_sht.id)
+    yield incentive["id"]
+
+@pytest.fixture()
+def incentives_created(get_sht_terminate_candidate,incentive_passenger_created,incentive_driver_created):
+    incentiveDriver = get_incentive(incentive_driver_created).user_id
+    incentivePassenger = get_incentive(incentive_passenger_created).user_id
+    incentives = create_incentives(incentivePassenger,incentiveDriver, get_sht_terminate_candidate["wtrip_list"].id)
+    yield incentives["id"]
+
+
+@pytest.fixture()
+def incentive_driver(incentive_driver_created):
+    incentive = get_incentive(incentive_driver_created)
+    yield incentive
+
+@pytest.fixture()
+def incentive_passenger(incentive_passenger_created):
+    incentive = get_incentive(incentive_passenger_created)
+    yield incentive
+
+@pytest.fixture()
+def incentives(incentives_created):
+    incentive = get_incentives_by_id(incentives_created)
+    yield incentive
+
+@pytest.fixture()
+def histories_shared_trip(get_sht_terminate_candidate):
+    histories = get_history_by_shared_trip_id(get_sht_terminate_candidate["shared_trip"].id)
+    yield histories
 
 @pytest.fixture()
 def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,incentives):
@@ -78,16 +128,16 @@ def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,inc
         proofs.append(proof)
     yield proofs
 
-@pytest.mark.usefixtures("create_proof_of_travel")
+
 @pytest.fixture()
-def get_id_proof_driver(get_user_sht):
+def get_id_proof_driver(get_user_sht,create_proof_of_travel):
     proof=getProofByUser(get_user_sht.id)
     yield proof.id
-@pytest.mark.usefixtures("create_proof_of_travel")
-@pytest.fixture()
-def get_id_proof_passenger(get_passenger_sht):
+
+
+def test_get_id_proof_passenger(get_passenger_sht,create_proof_of_travel):
     proof=getProofByUser(get_passenger_sht.id)
-    yield proof.id
+    assert proof.id == 20
 
 def test_login_driver_successful(client,get_user_sht):
     login = client.post("/login",data=dict(email=get_user_sht.email,
