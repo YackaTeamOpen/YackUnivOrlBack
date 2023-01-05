@@ -61,11 +61,15 @@ class ProofOfTravel2(Resource):
         return resp, 200
 
     @login_required
-    @api.response(200, "Proof successfully updated.")
+    @api.response(204, "Proof successfully updated.")
+    @api.response(404, "Not found.")
     @api.response(401, "Unauthorized.")
     def put(self, proof_of_travel_id):
         """Modification d'une preuve de covoiturage avec l'id associé"""
-        pass
+        proof = getProofById(proof_of_travel_id)
+        if proof == None:
+            return {}, 404
+        return validateProof(proof_of_travel_id)
 
 
 @api.route("/<int:community_id>/counts/<int:user_id>")

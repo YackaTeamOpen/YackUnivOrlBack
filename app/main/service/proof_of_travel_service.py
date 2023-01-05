@@ -138,7 +138,10 @@ def createProof(driver_id, passenger_id, trip_id):
     pass
 
 def validateProof(proof_id):
-    pass
+    proof = Proof_of_travel.query.filter_by(id=int(proof_id)).first()
+    proof.validate()
+    save_changes(proof)
+    return {}, 204
 
 def getProofById(proof_id):
     proof = Proof_of_travel.query.filter_by(id=proof_id).first()
