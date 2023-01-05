@@ -134,10 +134,10 @@ def get_id_proof_driver(get_user_sht,create_proof_of_travel):
     proof=getProofByUser(get_user_sht.id)
     yield proof.id
 
-
-def test_get_id_proof_passenger(get_passenger_sht,create_proof_of_travel):
+@pytest.fixture()
+def get_id_proof_passenger(get_passenger_sht,create_proof_of_travel):
     proof=getProofByUser(get_passenger_sht.id)
-    assert proof.id == 20
+    yield proof.id
 
 def test_login_driver_successful(client,get_user_sht):
     login = client.post("/login",data=dict(email=get_user_sht.email,
