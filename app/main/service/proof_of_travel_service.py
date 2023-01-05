@@ -75,7 +75,7 @@ def create_proof_of_travel(sht_id,contribution=0):
             dict["driver_revenue"]=revenue
             dict["passenger_id"] = wtl.waiting_trip.passenger_id
             dict["wtrip_list_id"] = wtl.id
-            incentives = get_incentives(trip.driver_id,dict["passenger_id"])
+            incentives = get_incentives(trip.driver_id,dict["passenger_id"],dict["wtrip_list_id"])
             if incentives==[]:
                 dict["incentive_id"] = 0
             else:
@@ -118,7 +118,7 @@ def create_proof_of_travel(sht_id,contribution=0):
                 wtrip_list_id=dict["wtrip_list_id"]
             )
             save_changes(proof)
-            return {"status": "success", "message": "Proof of travel created"}, 200
+            return {"status": "success", "message": "Proof of travel created"}, 201
         else:
             return {"status": "fail", "message": "Bad datetime"}, 400
 

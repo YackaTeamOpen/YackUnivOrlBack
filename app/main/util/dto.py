@@ -1129,3 +1129,30 @@ class CompanyDto:
 
 class ProofOfTravelDto:
     api = Namespace("/proof", description="Proof of travel endpoints")
+    proof = api.model(
+        "proof",
+        {
+            "id": fields.String(required=True, description="proof id"),
+            "proof_class": fields.String(required=True, description="proof class"),
+            "driver_id": fields.String(required=True, description="driver id"),
+            "passenger_id": fields.String(required=True, description="passenger id"),
+            "passenger_seats": fields.String(required=True, description="number of seats"),
+            "passenger_contribution": fields.String(required=True, description="passenger contribution"),
+            "driver_revenue": fields.String(required=True, description="driver revenue"),
+            "incentive_id": fields.String(required=True, description="incentive id"),
+            "wtrip_list_id": fields.String(required=True, description="wtrip list id"),
+        },
+    )
+
+    get_proof = api.model("pet_proof", {"proof": fields.Nested(proof)})
+    user_private = api.model(
+        "proof2",
+        {
+            "id": fields.String(required=True, description="proof id"),
+            "proof_class": fields.String(required=True, description="proof class"),
+            "driver_id": fields.String(required=True, description="driver id"),
+            "passenger_id": fields.String(required=True, description="passenger id"),
+            "passenger_seats": fields.String(required=True, description="number of seats"),
+        },
+    )
+
