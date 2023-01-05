@@ -39,7 +39,7 @@ jsonschema==3.2.0
 korean-lunar-calendar==0.2.1
 Mako==1.1.4
 MarkupSafe==2.0.1
-numpy==1.23.4
+numpy==1.21.6
 openrouteservice==2.3.0
 pandas==1.5.1
 paramiko==2.8.0
