@@ -12,6 +12,8 @@ from main.service.incentive_service import (
     get_incentivesDriver,
     get_incentives
 )
+from main.model.history import History
+from main.service.history_service import get_history_by_shared_trip_id
 from main.service.status_manager_service import (
     user_visible_shared_trip_status_exception_list,
     user_visible_driver_status_exception_list,
@@ -130,6 +132,12 @@ def get_all_proofs_of_travel():
 def get_proof_of_travel_by_wtl_id(wtl_id):
     return Proof_of_travel.query.join(Wtrip_list, Proof_of_travel.wtrip_list_id==wtl_id)\
         .filter(Proof_of_travel.wtrip_list_id==wtl_id).all()
+
+def get_proof_of_travel_by_sht_id(sht_id):
+    history = get_history_by_shared_trip_id(sht_id)[0];
+    proof = Proof_of_travel.query.join(Wtrip_list, Proof_of_travel.wtrip_list_id==history.wtrip_list_id)\
+        .filter_by(id=history.wtrip_list_id)
+    return proof
 
 def getAllProof():
     return Proof_of_travel.query.all()
