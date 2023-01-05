@@ -78,12 +78,12 @@ def create_proof_of_travel(histories_shared_trip,get_sht_terminate_candidate,inc
         proofs.append(proof)
     yield proofs
 
-
+@pytest.mark.usefixtures("create_proof_of_travel")
 @pytest.fixture()
 def get_id_proof_driver(get_user_sht):
     proof=getProofByUser(get_user_sht.id)
     yield proof.id
-
+@pytest.mark.usefixtures("create_proof_of_travel")
 @pytest.fixture()
 def get_id_proof_passenger(get_passenger_sht):
     proof=getProofByUser(get_passenger_sht.id)
