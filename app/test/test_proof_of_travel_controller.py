@@ -46,9 +46,6 @@ def get_passenger_sht(get_sht_terminate_candidate):
     yield passenger
 
 
-
-
-
 def test_login_driver_successful(client,get_user_sht):
     login = client.post("/login",data=dict(email=get_user_sht.email,
                                            password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
@@ -68,17 +65,6 @@ def test_proof_of_travel_created(client,get_user_sht,get_sht_terminate_candidate
     proof = client.post("/proof/create",data={"sht_id":get_sht_terminate_candidate["shared_trip"].id})
     assert proof.status_code == 201
 
-
-@pytest.fixture()
-def get_id_proof_driver(get_user_sht):
-    proof=getProofByUser(get_user_sht.id)
-    yield proof.id
-
-@pytest.fixture()
-def get_id_proof_passenger(get_passenger_sht):
-    proof=getProofByUser(get_passenger_sht.id)
-    yield proof.id
-
 def test_proof_of_travel_already_created(client,get_user_sht,get_sht_terminate_candidate):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
@@ -95,33 +81,37 @@ def test_get_proof_of_travel_by_id(client,get_user_sht,get_id_proof_driver):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
-    proof = client.get("/proof/"+str(get_id_proof_driver))
+    id = getProofByUser(get_user_sht.id).id
+    proof = client.get("/proof/"+str(id))
     assert proof.status_code == 200
 
 
-def test_get_proof_of_travel_by_id_unauthorized(client,get_user_sht,get_id_proof_driver):
-    proof = client.get("/proof/"+str(get_id_proof_driver))
+def test_get_proof_of_travel_by_id_unauthorized(client,get_user_sht):
+    id = getProofByUser(get_user_sht.id).id
+    proof = client.get("/proof/"+str(id))
     assert proof.status_code == 401
 
-def test_get_proof_of_travel_by_id_notfound(client, get_user_sht, get_id_proof_driver):
+def test_get_proof_of_travel_by_id_notfound(client, get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
     proof = client.get("/proof/blabla")
     assert proof.status_code == 404
 
-def test_modify_proof_of_travel(client,get_user_sht,get_id_proof_driver):
+def test_modify_proof_of_travel(client,get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
-    proof = client.put("/proof/"+str(get_id_proof_driver))
+    id = getProofByUser(get_user_sht.id).id
+    proof = client.put("/proof/"+str(id))
     assert proof.status_code == 204
 
-def test_modify_proof_of_travel_unauthorized(client,get_id_proof_driver):
-    proof = client.put("/proof/"+str(get_id_proof_driver))
+def test_modify_proof_of_travel_unauthorized(client,get_user_sht):
+    id = getProofByUser(get_user_sht.id).id
+    proof = client.put("/proof/"+str(id))
     assert proof.status_code == 401
 
-def test_modify_proof_of_travel(client, get_user_sht, get_id_proof_driver):
+def test_modify_proof_of_travel(client, get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
