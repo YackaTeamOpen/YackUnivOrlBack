@@ -41,14 +41,17 @@ class Proof_of_travel(db.Model):
     # stades du "contrat" initialement passé entre les deux usagers, et notamment
     # les termes de celui-ci en vigueur au moment du voyage réel.
     wtrip_list_id = db.Column(db.Integer, nullable=False)
+    is_validated = False
 
     driver = db.relationship("User",foreign_keys=[driver_id])
     passenger = db.relationship("User",foreign_keys=[passenger_id])
     incentive = db.relationship("Incentives",foreign_keys=[incentive_id])
 
+    def validate(self):
+        self.is_validated = True
 
     def __repr__(self):
-        return "<Proof_of_travel {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} >".format(
+        return "<Proof_of_travel {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} >".format(
             self.id,
             self.proof_class,
             self.driver_id,
@@ -69,5 +72,6 @@ class Proof_of_travel(db.Model):
             self.passenger_contribution,
             self.driver_revenue,
             self.incentive_id,
-            self.wtrip_list_id
+            self.wtrip_list_id,
+            self.is_validated
         )

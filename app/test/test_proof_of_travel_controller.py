@@ -99,11 +99,18 @@ def test_modify_proof_of_travel(client,get_user_sht,get_id_proof_driver):
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
     proof = client.put("/proof/"+str(get_id_proof_driver))
-    assert proof.status_code == 200
+    assert proof.status_code == 204
 
 def test_modify_proof_of_travel_unauthorized(client,get_id_proof_driver):
     proof = client.put("/proof/"+str(get_id_proof_driver))
     assert proof.status_code == 401
+
+def test_modify_proof_of_travel(client, get_user_sht, get_id_proof_driver):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    proof = client.put("/proof/blabla")
+    assert proof.status_code == 404
 
 
 def test_count_proofs_by_company(client,get_user_sht):

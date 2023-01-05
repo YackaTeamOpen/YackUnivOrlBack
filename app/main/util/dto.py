@@ -1144,7 +1144,7 @@ class ProofOfTravelDto:
         },
     )
 
-    get_proof = api.model("pet_proof", {"proof": fields.Nested(proof)})
+    get_proof = api.model("get_proof", {"proof": fields.Nested(proof)})
     user_private = api.model(
         "proof2",
         {
