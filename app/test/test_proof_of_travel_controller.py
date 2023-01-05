@@ -62,14 +62,14 @@ def test_proof_of_travel_created(client,get_user_sht,get_sht_terminate_candidate
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
-    proof = client.post("/proof/create",data={"sht_id":get_sht_terminate_candidate["shared_trip"].id})
+    proof = client.post("/proof/create",data=dict(sht_id=get_sht_terminate_candidate["shared_trip"].id))
     assert proof.status_code == 201
 
 def test_proof_of_travel_already_created(client,get_user_sht,get_sht_terminate_candidate):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
-    proof = client.post("/proof/create", data={"sht_id": get_sht_terminate_candidate["shared_trip"].id})
+    proof = client.post("/proof/create", data=dict(sht_id=get_sht_terminate_candidate["shared_trip"].id))
     assert proof.status_code == 409
 
 def test_proof_of_travel_unauthorized(client,get_user_sht,get_sht_terminate_candidate):
@@ -77,7 +77,7 @@ def test_proof_of_travel_unauthorized(client,get_user_sht,get_sht_terminate_cand
     assert proof.status_code == 401
 
 
-def test_get_proof_of_travel_by_id(client,get_user_sht,get_id_proof_driver):
+def test_get_proof_of_travel_by_id(client,get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
