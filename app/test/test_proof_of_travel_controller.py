@@ -10,6 +10,7 @@ from main.service.proof_of_travel_service import (
 from main.model.incentive import Incentive
 from main.model.incentives import Incentives
 from main import db
+from main.config import password_user
 from main.service.incentive_service import (
     create_incentive,
     create_incentives,
@@ -56,26 +57,26 @@ def deleteDB():
 
 def test_login_driver_successful(client,get_user_sht):
     login = client.post("/login",data=dict(email=get_user_sht.email,
-                                           password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                           password=password_user),
                         follow_redirects=True)
     assert login.status_code == 200
 
 def test_login_passenger_successful(client,get_passenger_sht):
     login = client.post("/login",data=dict(email=get_passenger_sht.email,
-                                           password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                           password=password_user),
                         follow_redirects=True)
     assert login.status_code == 200
 
 def test_proof_of_travel_created(client,get_user_sht,get_sht_terminate_candidate,deleteDB):
     client.post("/login", data=dict(email=get_user_sht.email,
-                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                    password=password_user),
                 follow_redirects=True)
     proof = client.post("/proof/create",data=dict(sht_id=get_sht_terminate_candidate["shared_trip"].id))
     assert proof.status_code == 201
 
 def test_proof_of_travel_already_created(client,get_user_sht,get_sht_terminate_candidate):
     client.post("/login", data=dict(email=get_user_sht.email,
-                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                    password=password_user),
                 follow_redirects=True)
     proof = client.post("/proof/create", data=dict(sht_id=get_sht_terminate_candidate["shared_trip"].id))
     assert proof.status_code == 409
@@ -87,7 +88,7 @@ def test_proof_of_travel_unauthorized(client,get_user_sht,get_sht_terminate_cand
 
 def test_get_proof_of_travel_by_id(client,get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
-                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                    password=password_user),
                 follow_redirects=True)
     id = getProofByUser(get_user_sht.id).id
     proof = client.get("/proof/"+str(id))
@@ -101,14 +102,14 @@ def test_get_proof_of_travel_by_id_unauthorized(client,get_user_sht):
 
 def test_get_proof_of_travel_by_id_notfound(client, get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
-                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                    password=password_user),
                 follow_redirects=True)
     proof = client.get("/proof/blabla")
     assert proof.status_code == 404
 
 def test_modify_proof_of_travel(client,get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
-                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                    password=password_user),
                 follow_redirects=True)
     id = getProofByUser(get_user_sht.id).id
     proof = client.put("/proof/"+str(id))
@@ -121,7 +122,7 @@ def test_modify_proof_of_travel_unauthorized(client,get_user_sht):
 
 def test_modify_proof_of_travel(client, get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
-                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                    password=password_user),
                 follow_redirects=True)
     proof = client.put("/proof/blabla")
     assert proof.status_code == 404
@@ -129,7 +130,7 @@ def test_modify_proof_of_travel(client, get_user_sht):
 
 def test_count_proofs_by_company(client,get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
-                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                    password=password_user),
                 follow_redirects=True)
     nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id))
     assert nb.status_code == 200
@@ -141,7 +142,7 @@ def test_count_proofs_by_company_unauthorized(client,get_user_sht):
 
 def test_count_proofs_by_driver(client,get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
-                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                    password=password_user),
                 follow_redirects=True)
     nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id)+"/driver")
     assert nb.status_code == 200
@@ -152,7 +153,7 @@ def test_count_proofs_by_driver_unauthorized(client,get_user_sht):
 
 def test_count_proofs_by_passenger(client,get_passenger_sht):
     client.post("/login", data=dict(email=get_passenger_sht.email,
-                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                                    password=password_user),
                 follow_redirects=True)
     nb = client.get("/proof/"+str(get_passenger_sht.organization_id)+"/counts/"+str(get_passenger_sht.id)+"/passenger")
     assert nb.status_code == 200

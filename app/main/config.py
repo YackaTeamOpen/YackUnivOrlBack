@@ -22,7 +22,12 @@ environments = {
         "lat_to_meters": 111000,  # équivalence degrés de latitude - mètres en CVL *
         "long_to_meters": 74870,  # équivalence degrés de longitude - mètres en CVL
         "avatar_size" : 60,
+    },
+    "test":{
+        "password": "6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"
     }
 }
 
 config_name = os.environ.get("FLASK_ENV", "local")
+os.environ["PASSWORD_TEST"]="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"
+password_user=os.environ["PASSWORD_TEST"]
