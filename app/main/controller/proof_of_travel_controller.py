@@ -9,7 +9,13 @@ from main.service.proof_of_travel_service import (
     create_proof_of_travel,
     get_proof_of_travel_by_sht_id,
     validateProof,
-    getProofById
+    getProofById,
+    getNbProofByUser,
+    getNbProofByUserAsDriver,
+    getNbProofByUserAsPassenger,
+)
+from main.service.user_service import (
+    getUserById,
 )
 
 log = logging.getLogger(__name__)
@@ -80,26 +86,48 @@ class ProofsCountByUserComp(Resource):
     @api.response(401, "Unauthorized.")
     def get(self, community_id, user_id):
         """Récupération du total de voyages prouvés par les utilisateurs faisant partie d'une entreprise"""
-
-        return {}, 200
+        user = getUserById(user_id)
+        if user == None or user.organization_id != community_id :
+            return {}, 404
+        total = getNbProofByUser(user_id)
+        resp = {"total proofs": total}
+        resp["status"] = "success"
+        resp["message"] = "Getting the total of proofs generated"
+        return resp, 200
 
 
 @api.route("/<int:community_id>/counts/<int:user_id>/driver")
 class ProofsCountByDriverComp(Resource):
     @login_required
     @api.response(200, "Total proofs validated by the user as a driver.")
+    @api.response(404, "Not found")
     @api.response(401, "Unauthorized.")
     def get(self, community_id, user_id):
         """Récupération du total de voyages prouvés en tant que conducteur pour les utilisateurs faisant partie d'une entreprise"""
-        return {}, 200
+        user = getUserById(user_id)
+        if user == None or user.organization_id != community_id:
+            return {}, 404
+        total = getNbProofByUserAsDriver(user_id)
+        resp = {"total proofs": total}
+        resp["status"] = "success"
+        resp["message"] = "Getting the total of proofs generated"
+        return resp, 200
 
 
 @api.route("/<int:community_id>/counts/<int:user_id>/passenger")
 class ProofsCountByPassengerComp(Resource):
     @login_required
     @api.response(200, "Total proofs validated by the user as a passenger.")
+    @api.response(404, "Not found")
     @api.response(401, "Unauthorized.")
     def get(self, community_id, user_id):
         """Récupération du total de voyages prouvés en tant que passager pour les utilisateurs faisant partie d'une entreprise"""
-        return {}, 200
+        user = getUserById(user_id)
+        if user == None or user.organization_id != community_id:
+            return {}, 404
+        total = getNbProofByUserAsPassenger(user_id)
+        resp = {"total proofs": total}
+        resp["status"] = "success"
+        resp["message"] = "Getting the total of proofs generated"
+        return resp, 200
 

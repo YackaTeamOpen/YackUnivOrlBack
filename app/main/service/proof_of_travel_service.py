@@ -158,6 +158,10 @@ def getProofByUser(user_id):
     proof = Proof_of_travel.query.filter((Proof_of_travel.driver_id==user_id) | (Proof_of_travel.passenger_id==user_id)).first()
     return proof
 
+def getNbProofByUser(user_id):
+    proofs = Proof_of_travel.query.filter((Proof_of_travel.driver_id==user_id) | (Proof_of_travel.passenger_id==user_id))
+    return proofs.count()
+
 def getNbProofByUserAsDriver(user_id):
     proofs = Proof_of_travel.query.filter_by(driver_id=user_id)
     return proofs.count()

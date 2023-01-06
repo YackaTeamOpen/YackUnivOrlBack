@@ -138,6 +138,20 @@ def test_count_proofs_by_company_unauthorized(client,get_user_sht):
     nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id))
     assert nb.status_code == 401
 
+def test_count_proofs_by_company_notfound(client, get_user_sht):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    nb = client.get("/proof/" + "idInexistant" + "/counts/" + str(get_user_sht.id))
+    assert nb.status_code == 404
+
+def test_count_proofs_by_company_notfound2(client,get_user_sht):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+"IdInexistant")
+    assert nb.status_code == 404
+
 
 def test_count_proofs_by_driver(client,get_user_sht):
     client.post("/login", data=dict(email=get_user_sht.email,
@@ -150,6 +164,20 @@ def test_count_proofs_by_driver_unauthorized(client,get_user_sht):
     nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+str(get_user_sht.id)+"/driver")
     assert nb.status_code == 401
 
+def test_count_proofs_by_driver_notfound(client, get_user_sht):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    nb = client.get("/proof/" + "IdInexistant" + "/counts/" + str(get_user_sht.id) + "/driver")
+    assert nb.status_code == 404
+
+def test_count_proofs_by_driver_notfound2(client,get_user_sht):
+    client.post("/login", data=dict(email=get_user_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    nb = client.get("/proof/"+str(get_user_sht.organization_id)+"/counts/"+"IdInexistant"+"/driver")
+    assert nb.status_code == 404
+
 def test_count_proofs_by_passenger(client,get_passenger_sht):
     client.post("/login", data=dict(email=get_passenger_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
@@ -160,3 +188,18 @@ def test_count_proofs_by_passenger(client,get_passenger_sht):
 def test_count_proofs_by_passenger_unauthorized(client,get_passenger_sht):
     nb = client.get("/proof/"+str(get_passenger_sht.organization_id)+"/counts/"+str(get_passenger_sht.id)+"/passenger")
     assert nb.status_code == 401
+
+def test_count_proofs_by_passenger_notfound(client, get_passenger_sht):
+    client.post("/login", data=dict(email=get_passenger_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    nb = client.get(
+        "/proof/" + "idInexistant" + "/counts/" + str(get_passenger_sht.id) + "/passenger")
+    assert nb.status_code == 404
+
+def test_count_proofs_by_passenger_notfound2(client,get_passenger_sht):
+    client.post("/login", data=dict(email=get_passenger_sht.email,
+                                    password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
+                follow_redirects=True)
+    nb = client.get("/proof/"+str(get_passenger_sht.organization_id)+"/counts/"+"idInexistant"+"/passenger")
+    assert nb.status_code == 404
