@@ -5,16 +5,18 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: ["3.7.11"]
     env:
       DB_USER: root
       DB_PASSWORD: root
     steps:
       - uses: actions/checkout@v3
-      - name: Set Up Python 3.7.11
+      - name: Set Up Python
         uses: actions/setup-python@v4
         with:
-            python-version: '3.7.11'
+            python-version: ${{matrix.python-version}}
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
       - name: Install requirements
         run: pip install -r install/reqs.txt
       - name: Install the database

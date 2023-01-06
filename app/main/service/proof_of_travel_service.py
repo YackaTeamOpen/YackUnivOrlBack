@@ -8,10 +8,15 @@ from main.model.incentive import Incentive
 from main.model.user import User
 from main.service.shared_trip_service import pay_ratio
 from main.service.incentive_service import (
+    create_incentive,
+    create_incentives,
     get_incentivesPassenger,
     get_incentivesDriver,
-    get_incentives
+    get_incentives,
+    get_incentives_by_user
 )
+from main.model.history import History
+from main.service.history_service import get_history_by_shared_trip_id
 from main.service.status_manager_service import (
     user_visible_shared_trip_status_exception_list,
     user_visible_driver_status_exception_list,
@@ -33,7 +38,7 @@ def time_end(end_dt, gap):
     time_diff = dt1 - dt2
     return True if (abs(time_diff.total_seconds() / 60) < gap) else False
 
-def create_proof_of_travel(sht_id,contribution=0):
+def create_proof_of_travel(sht_id,contribution=0,amont_driver=0,amont_passenger=0,revenue=0):
     """Cette fonction crée pour chaque shared_trip une preuve de covoiturage quand le shared_trip est terminated et la date de fin de trajet est équivelent à la date actuelle et prévue"""
     sht_wtl=(db.session.query(Shared_trip, Wtrip_list)
              .join(Wtrip_list, Shared_trip.id == Wtrip_list.shared_trip_id)
@@ -51,7 +56,7 @@ def create_proof_of_travel(sht_id,contribution=0):
         sht=sht_wtl[0]
         wtl=sht_wtl[1]
         dict={}
-        if time_end(sht.occ_details_pickle[len(sht.occ_details_pickle)-1]["arrival_time"],120):
+        if time_end(sht.occ_details_pickle[len(sht.occ_details_pickle)-1]["arrival_time"],240):
             dict["proof_class"]="C"
             trip = sht.trip
             dict["driver_id"]=trip.driver_id
@@ -64,22 +69,18 @@ def create_proof_of_travel(sht_id,contribution=0):
             dict["passenger_iso_end_time"] = sht.occ_details_pickle[len(sht.occ_details_pickle) - 1]["arrival_time"].isoformat()
             dict["passenger_seats"]=1;
             dict["passenger_contribution"]=contribution*pay_ratio(trip.free_ratio)
-            incentivesDriver = (db.session.query(Incentive)
-                                .join(User, Incentive.user_id == trip.driver_id)
-                                .filter((Incentive.user_id==trip.driver_id)).all()
-                            )
             revenue = 0
-            for incentiveDriver in incentivesDriver:
-                revenue=revenue+incentiveDriver.amont
-
+            if get_incentivesDriver(dict["driver_id"]) is None or get_incentivesDriver(dict["driver_id"]) == []:
+                incentivesDriver = create_incentive(amont_driver,dict["driver_id"])
             dict["driver_revenue"]=revenue
             dict["passenger_id"] = wtl.waiting_trip.passenger_id
             dict["wtrip_list_id"] = wtl.id
-            incentives = get_incentives(trip.driver_id,dict["passenger_id"],dict["wtrip_list_id"])
-            if incentives==[]:
-                dict["incentive_id"] = 0
-            else:
-                dict["incentive_id"]=incentives.id
+            if get_incentivesPassenger(dict["passenger_id"]) is None or get_incentivesPassenger(dict["passenger_id"]) == []:
+                incentivesPassenger = create_incentive(amont_passenger,dict["passenger_id"])
+
+            create_incentives(dict["passenger_id"],dict["driver_id"],dict["wtrip_list_id"])
+            incentives = get_incentives(trip.driver_id, dict["passenger_id"], dict["wtrip_list_id"])
+            dict["incentive_id"]=incentives.id
 
             for i in range(len(sht.path_json)):
                 if i == sht.occ_details_pickle[0]["start_path_index"]:
@@ -130,6 +131,12 @@ def get_all_proofs_of_travel():
 def get_proof_of_travel_by_wtl_id(wtl_id):
     return Proof_of_travel.query.join(Wtrip_list, Proof_of_travel.wtrip_list_id==wtl_id)\
         .filter(Proof_of_travel.wtrip_list_id==wtl_id).all()
+
+def get_proof_of_travel_by_sht_id(sht_id):
+    history = get_history_by_shared_trip_id(sht_id)[0];
+    proof = Proof_of_travel.query.join(Wtrip_list, Proof_of_travel.wtrip_list_id==history.wtrip_list_id)\
+        .filter_by(id=history.wtrip_list_id)
+    return proof
 
 def getAllProof():
     return Proof_of_travel.query.all()

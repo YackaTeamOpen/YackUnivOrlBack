@@ -7,7 +7,7 @@ from main.model.proof_of_travel import Proof_of_travel
 from main.util.dto import ProofOfTravelDto
 from main.service.proof_of_travel_service import (
     create_proof_of_travel,
-    get_proof_of_travel_by_wtl_id,
+    get_proof_of_travel_by_sht_id,
     validateProof,
     getProofById
 )
@@ -37,8 +37,8 @@ class ProofOfTravel(Resource):
     def post(self):
         """Création d'une preuve de covoiturage"""
         data = request.form
-        proof = get_proof_of_travel_by_wtl_id(data.get("sht_id"))
-        if len(proof) > 0:
+        proof = get_proof_of_travel_by_sht_id(data.get("sht_id"))
+        if proof.count() > 0:
             return {"status": "fail", "message": "Error"}, 409
         return create_proof_of_travel(data.get("sht_id"))
 
