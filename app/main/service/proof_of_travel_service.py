@@ -55,7 +55,7 @@ def create_proof_of_travel(sht_id,contribution=0,amont_driver=0,amont_passenger=
         sht=sht_wtl[0]
         wtl=sht_wtl[1]
         dict={}
-        if time_end(sht.occ_details_pickle[len(sht.occ_details_pickle)-1]["arrival_time"],120):
+        if time_end(sht.occ_details_pickle[len(sht.occ_details_pickle)-1]["arrival_time"],240):
             dict["proof_class"]="C"
             trip = sht.trip
             dict["driver_id"]=trip.driver_id
@@ -72,22 +72,19 @@ def create_proof_of_travel(sht_id,contribution=0,amont_driver=0,amont_passenger=
                                 .join(User, Incentive.user_id == trip.driver_id)
                                 .filter((Incentive.user_id==trip.driver_id)).all()
                             )
-
-            incentivesPassenger = (db.session.query(Incentive)
-                                .join(User, Incentive.user_id == dict["passenger_id"])
-                                .filter((Incentive.user_id==dict["passenger_id"])).all()
-                            )
             revenue = 0
             if incentivesDriver == None:
                 create_incentive(amont_driver,dict["driver_id"])
-            if incentivesPassenger == None:
-                create_incentive(amont_passenger,dict["passenger_id"])
-
-
 
             dict["driver_revenue"]=revenue
             dict["passenger_id"] = wtl.waiting_trip.passenger_id
             dict["wtrip_list_id"] = wtl.id
+            incentivesPassenger = (db.session.query(Incentive)
+                                   .join(User, Incentive.user_id == dict["passenger_id"])
+                                   .filter((Incentive.user_id == dict["passenger_id"])).all()
+                                   )
+            if incentivesPassenger == None:
+                create_incentive(amont_passenger,dict["passenger_id"])
             incentives = get_incentives(trip.driver_id,dict["passenger_id"],dict["wtrip_list_id"])
             if incentives==None:
                 create_incentives(dict["passenger_id"],dict["driver_id"],dict["wtrip_list_id"])

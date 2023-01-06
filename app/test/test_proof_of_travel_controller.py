@@ -1,6 +1,7 @@
 import pytest
 from main.controller.proof_of_travel_controller import *
 from main.model.user import User
+from main.model.proof_of_travel import Proof_of_travel
 from main.service.user_service import setup_password,getUserByEmail,getUserById
 from main.service.proof_of_travel_service import (
     list_shared_trip_terminate_candidates,
@@ -45,14 +46,19 @@ def get_passenger_sht(get_sht_terminate_candidate):
     passenger=getUserById(history.passenger_id)
     yield passenger
 
+@pytest.fixture()
+def deleteDB():
+    db.session.query(Proof_of_travel).delete()
+    db.session.commit()
 
-def test_login_driver_successful(client,get_user_sht):
+
+def test_login_driver_successful(client,get_user_sht,deleteDB):
     login = client.post("/login",data=dict(email=get_user_sht.email,
                                            password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                         follow_redirects=True)
     assert login.status_code == 200
 
-def test_login_passenger_successful(client,get_passenger_sht):
+def test_login_passenger_successful(client,get_passenger_sht,deleteDB):
     login = client.post("/login",data=dict(email=get_passenger_sht.email,
                                            password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                         follow_redirects=True)
