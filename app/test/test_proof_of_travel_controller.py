@@ -52,19 +52,19 @@ def deleteDB():
     db.session.commit()
 
 
-def test_login_driver_successful(client,get_user_sht,deleteDB):
+def test_login_driver_successful(client,get_user_sht):
     login = client.post("/login",data=dict(email=get_user_sht.email,
                                            password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                         follow_redirects=True)
     assert login.status_code == 200
 
-def test_login_passenger_successful(client,get_passenger_sht,deleteDB):
+def test_login_passenger_successful(client,get_passenger_sht):
     login = client.post("/login",data=dict(email=get_passenger_sht.email,
                                            password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                         follow_redirects=True)
     assert login.status_code == 200
 
-def test_proof_of_travel_created(client,get_user_sht,get_sht_terminate_candidate):
+def test_proof_of_travel_created(client,get_user_sht,get_sht_terminate_candidate,deleteDB):
     client.post("/login", data=dict(email=get_user_sht.email,
                                     password="6aa07aaf6f8a0a553d257f048770304d483c92fdfea159c7ebcdbe3b72df49ea"),
                 follow_redirects=True)
