@@ -115,7 +115,7 @@ def create_proof_of_travel(sht_id,contribution=0):
                 passenger_contribution=dict["passenger_contribution"],
                 driver_revenue=dict["driver_revenue"],
                 incentive_id=dict["incentive_id"],
-                wtrip_list_id=dict["wtrip_list_id"]
+                wtrip_list_id=dict["wtrip_list_id"],
             )
             save_changes(proof)
             return {"status": "success", "message": "Proof of travel created"}, 201

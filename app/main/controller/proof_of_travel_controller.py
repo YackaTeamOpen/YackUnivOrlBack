@@ -76,9 +76,11 @@ class ProofOfTravel2(Resource):
 class ProofsCountByUserComp(Resource):
     @login_required
     @api.response(200, "Total proofs validated by the user.")
+    @api.response(404, "Not found")
     @api.response(401, "Unauthorized.")
     def get(self, community_id, user_id):
         """Récupération du total de voyages prouvés par les utilisateurs faisant partie d'une entreprise"""
+
         return {}, 200
 
 
