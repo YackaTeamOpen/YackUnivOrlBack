@@ -49,6 +49,8 @@ def get_passenger_sht(get_sht_terminate_candidate):
 @pytest.fixture()
 def deleteDB():
     db.session.query(Proof_of_travel).delete()
+    db.session.query(Incentives).delete()
+    db.session.query(Incentive).delete()
     db.session.commit()
 
 

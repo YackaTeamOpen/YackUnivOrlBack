@@ -12,7 +12,8 @@ from main.service.incentive_service import (
     create_incentives,
     get_incentivesPassenger,
     get_incentivesDriver,
-    get_incentives
+    get_incentives,
+    get_incentives_by_user
 )
 from main.model.history import History
 from main.service.history_service import get_history_by_shared_trip_id
@@ -68,26 +69,16 @@ def create_proof_of_travel(sht_id,contribution=0,amont_driver=0,amont_passenger=
             dict["passenger_iso_end_time"] = sht.occ_details_pickle[len(sht.occ_details_pickle) - 1]["arrival_time"].isoformat()
             dict["passenger_seats"]=1;
             dict["passenger_contribution"]=contribution*pay_ratio(trip.free_ratio)
-            incentivesDriver = (db.session.query(Incentive)
-                                .join(User, Incentive.user_id == trip.driver_id)
-                                .filter((Incentive.user_id==trip.driver_id)).all()
-                            )
             revenue = 0
-            if incentivesDriver == None:
-                create_incentive(amont_driver,dict["driver_id"])
-
+            if get_incentivesDriver(dict["driver_id"]) is None or get_incentivesDriver(dict["driver_id"]) == []:
+                incentivesDriver = create_incentive(amont_driver,dict["driver_id"])
             dict["driver_revenue"]=revenue
             dict["passenger_id"] = wtl.waiting_trip.passenger_id
             dict["wtrip_list_id"] = wtl.id
-            incentivesPassenger = (db.session.query(Incentive)
-                                   .join(User, Incentive.user_id == dict["passenger_id"])
-                                   .filter((Incentive.user_id == dict["passenger_id"])).all()
-                                   )
-            if incentivesPassenger == None:
-                create_incentive(amont_passenger,dict["passenger_id"])
-            incentives = get_incentives(trip.driver_id,dict["passenger_id"],dict["wtrip_list_id"])
-            if incentives==None:
-                create_incentives(dict["passenger_id"],dict["driver_id"],dict["wtrip_list_id"])
+            if get_incentivesPassenger(dict["passenger_id"]) is None or get_incentivesPassenger(dict["passenger_id"]) == []:
+                incentivesPassenger = create_incentive(amont_passenger,dict["passenger_id"])
+
+            create_incentives(dict["passenger_id"],dict["driver_id"],dict["wtrip_list_id"])
             incentives = get_incentives(trip.driver_id, dict["passenger_id"], dict["wtrip_list_id"])
             dict["incentive_id"]=incentives.id
 
